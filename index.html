@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>متبرعون بالدم</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      font-family: 'Arial', sans-serif;
+      background-color: #f5f5f5;
+      margin: 0;
+      padding: 0;
+    }
+    header {
+      background-color: #b30000;
+      color: white;
+      text-align: center;
+      padding: 15px;
+      font-size: 24px;
+    }
+    nav {
+      display: flex;
+      justify-content: space-around;
+      background-color: #ffcccc;
+      padding: 10px;
+      flex-wrap: wrap;
+    }
+    nav button {
+      padding: 10px 15px;
+      border: none;
+      border-radius: 8px;
+      background-color: #b30000;
+      color: white;
+      cursor: pointer;
+      margin: 5px;
+    }
+    .section {
+      display: none;
+      padding: 20px;
+    }
+    .active {
+      display: block;
+    }
+    input, select, button {
+      width: 100%;
+      margin-top: 10px;
+      padding: 10px;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+    }
+    table {
+      width: 100%;
+      margin-top: 15px;
+      border-collapse: collapse;
+      background-color: white;
+    }
+    th, td {
+      padding: 8px;
+      border: 1px solid red;
+      text-align: center;
+    }
+    thead tr {
+      background-color: #b30000;
+      color: white;
+    }
+    .filter-section {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    @media (min-width: 600px) {
+      .filter-section {
+        flex-direction: row;
+      }
+    }
+    .popup-message, .password-popup {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0.9);
+      background-color: #fff;
+      padding: 20px 30px;
+      border-radius: 15px;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+      z-index: 1000;
+      transition: all 0.3s ease;
+      max-width: 90%;
+      width: 350px;
+      text-align: center;
+      border: 3px solid red;
+    }
+    .popup-message.active, .password-popup.active {
+      display: block;
+      transform: translate(-50%, -50%) scale(1);
+    }
+    .popup-message button, .password-popup button {
+      margin-top: 15px;
+      background-color: #c00;
+      color: white;
+      border: none;
+      padding: 8px 15px;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    .footer {
+      text-align: center;
+      margin-top: 20px;
+      color: #888;
+      padding: 10px;
+    }
+  </style>
+</head>
+<body>
+
+<header>متبرعون بالدم... قطرة أمل تنقذ حياة</header>
+<header>نرجو من المتبرعين تعبئة بياناتهم الصحيحة وكاملة...</header>
+
+<nav>
+  <button onclick="showSection('register')">تسجيل متبرع جديد</button>
+  <button onclick="showPasswordPopup()">تعديل بيانات</button>
+  <button onclick="showSection('search')">بحث عن متبرع</button>
+</nav>
+
+<div id="register" class="section active">
+  <h3>تسجيل كمتبرع</h3>
+  <input type="text" id="donorName" placeholder="الاسم الكامل">
+  <input type="text" id="donorPhone" placeholder="رقم الهاتف">
+  <input type="text" id="donorCity" placeholder="المحافظة">
+  <input type="text" id="donorArea" placeholder="المديرية">
+  <input type="text" id="donorLocation" placeholder="مكان السكن الحالي">
+  <label for="donorLastDate">آخر تاريخ تبرع (مهم)</label><input type="date" id="donorLastDate">
+  <select id="donorBlood">
+    <option selected>جميع الفصائل</option>
+    <option>+A</option><option>-A</option>
+    <option>+B</option><option>-B</option>
+    <option>+AB</option><option>-AB</option>
+    <option>+O</option><option>-O</option>
+  </select>
+  <button onclick="addDonor()">تسجيل</button>
+</div>
+
+<div id="edit" class="section">
+  <h3>تعديل بيانات المتبرع</h3>
+  <input type="text" id="editName" placeholder="ابحث باسم المتبرع">
+  <button onclick="editDonor()" style="background-color: #007bff;">بحث عن متبرع</button>
+  <div id="editSection" style="display: none;">
+    <input type="text" id="editNewName" placeholder="الاسم الكامل">
+    <input type="text" id="editPhone" placeholder="رقم الهاتف">
+    <input type="text" id="editCity" placeholder="المحافظة">
+    <input type="text" id="editArea" placeholder="المديرية">
+    <input type="text" id="editLocation" placeholder="مكان السكن ">
+    <input type="date" id="editLastDate">
+    <select id="editBlood">
+      <option>+A</option><option>-A</option>
+      <option>+B</option><option>-B</option>
+      <option>+AB</option><option>-AB</option>
+      <option>+O</option><option>-O</option>
+    </select>
+    <button onclick="saveEdit()" style="background-color: #28a745;">تعديل بيانات المتبرع</button>
+    <button onclick="deleteDonor()">حذف</button>
+  </div>
+</div>
+
+<div id="search" class="section">
+  <h3>البحث عن متبرعين</h3>
+  <div class="filter-section">
+    <select id="searchBlood" onchange="searchDonors()">
+      <option selected>جميع الفصائل</option>
+      <option>+A</option><option>-A</option>
+      <option>+B</option><option>-B</option>
+      <option>+AB</option><option>-AB</option>
+      <option>+O</option><option>-O</option>
+    </select>
+    <input type="text" id="searchQuery" oninput="searchDonors()" placeholder="ابحث بالاسم أو رقم الهاتف">
+  </div>
+  <table id="donorsTable">
+    <thead>
+      <tr>
+        <th>الاسم</th><th>الهاتف</th><th>الفصيلة</th><th>المحافظة</th><th>المديرية</th><th>السكن</th><th>آخر تبرع</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+</div>
+
+<div id="successPopup" class="popup-message"></div>
+<div id="deleteConfirmPopup" class="popup-message">
+  <p>هل أنت متأكد من حذف بيانات المتبرع؟</p>
+  <button onclick="confirmDelete(true)">نعم</button>
+  <button onclick="confirmDelete(false)">لا</button>
+</div>
+<div id="passwordPopup" class="password-popup">
+  <p>إذا أردت تعديل بياناتك تواصل على الواتس على الرقم التالي:<br>00966511479262</p>
+  <input type="password" id="passwordInput" placeholder="أدخل كلمة المرور">
+  <button onclick="checkPassword()">دخول</button>
+  <button onclick="closePasswordPopup()">إغلاق</button>
+</div>
+<div class="footer">تصميم: م/نبيل اليافعي</div>
+
+<script>
+  const donorsData = [];
+  let pendingDeleteIndex = null;
+
+  function showSection(id) {
+    document.querySelectorAll(".section").forEach(sec => sec.classList.remove("active"));
+    document.getElementById(id).classList.add("active");
+  }
+
+  function showPasswordPopup() {
+    document.getElementById("passwordPopup").classList.add("active");
+  }
+
+  function closePasswordPopup() {
+    document.getElementById("passwordPopup").classList.remove("active");
+  }
+
+  function checkPassword() {
+    const password = document.getElementById("passwordInput").value;
+    if (password === "Na@7363Nabel") {
+      closePasswordPopup();
+      showSection('edit');
+    } else {
+      alert("كلمة المرور غير صحيحة");
+    }
+  }
+
+  function addDonor() {
+    const name = document.getElementById("donorName").value;
+    const phone = document.getElementById("donorPhone").value;
+    const city = document.getElementById("donorCity").value;
+    const area = document.getElementById("donorArea").value;
+    const location = document.getElementById("donorLocation").value;
+    const lastDate = document.getElementById("donorLastDate").value;
+    const blood = document.getElementById("donorBlood").value;
+    if (name && phone && city && area && location && lastDate && blood !== "جميع الفصائل") {
+      donorsData.push({ name, phone, city, area, location, lastDate, blood });
+      showMessage("تم التسجيل بنجاح<br><small>جزاك الله خيرًا وجعلها في ميزان حسناتك</small>");
+      document.querySelectorAll("#register input").forEach(i => i.value = "");
+      document.getElementById("donorBlood").selectedIndex = 0;
+      renderSearchTable();
+    } else {
+      showMessage("يرجى تعبئة جميع الحقول واختيار الفصيلة");
+    }
+  }
+
+  function editDonor() {
+    const name = document.getElementById("editName").value;
+    const donor = donorsData.find(d => d.name.toLowerCase() === name.toLowerCase());
+    if (donor) {
+      document.getElementById("editSection").style.display = "block";
+      document.getElementById("editNewName").value = donor.name;
+      document.getElementById("editPhone").value = donor.phone;
+      document.getElementById("editCity").value = donor.city;
+      document.getElementById("editArea").value = donor.area;
+      document.getElementById("editLocation").value = donor.location;
+      document.getElementById("editLastDate").value = donor.lastDate;
+      document.getElementById("editBlood").value = donor.blood;
+    } else {
+      showMessage("المتبرع غير موجود");
+      document.getElementById("editSection").style.display = "none";
+    }
+  }
+
+  function saveEdit() {
+    const name = document.getElementById("editName").value;
+    const donor = donorsData.find(d => d.name.toLowerCase() === name.toLowerCase());
+    if (donor) {
+      donor.name = document.getElementById("editNewName").value;
+      donor.phone = document.getElementById("editPhone").value;
+      donor.city = document.getElementById("editCity").value;
+      donor.area = document.getElementById("editArea").value;
+      donor.location = document.getElementById("editLocation").value;
+      donor.lastDate = document.getElementById("editLastDate").value;
+      donor.blood = document.getElementById("editBlood").value;
+      renderSearchTable();
+      showMessage("تم تعديل بياناتك بنجاح");
+      document.getElementById("editSection").style.display = "none";
+    }
+  }
+
+  function deleteDonor() {
+    const name = document.getElementById("editName").value;
+    const index = donorsData.findIndex(d => d.name.toLowerCase() === name.toLowerCase());
+    if (index !== -1) {
+      pendingDeleteIndex = index;
+      document.getElementById("deleteConfirmPopup").classList.add('active');
+    }
+  }
+
+  function confirmDelete(confirmed) {
+    if (confirmed && pendingDeleteIndex !== null) {
+      donorsData.splice(pendingDeleteIndex, 1);
+      renderSearchTable();
+      showMessage("تم حذف المتبرع بنجاح");
+      document.getElementById("editSection").style.display = "none";
+    }
+    document.getElementById("deleteConfirmPopup").classList.remove("active");
+    pendingDeleteIndex = null;
+  }
+
+  function searchDonors() {
+    const blood = document.getElementById("searchBlood").value;
+    const query = document.getElementById("searchQuery").value.toLowerCase();
+    const results = donorsData.filter(d => {
+      return (blood === "جميع الفصائل" || blood === d.blood) &&
+             (d.name.toLowerCase().includes(query) || d.phone.includes(query));
+    });
+    const tbody = document.querySelector("#donorsTable tbody");
+    tbody.innerHTML = "";
+    results.forEach(d => {
+      const row = `<tr>
+        <td data-label='الاسم'>${d.name}</td>
+        <td data-label='الهاتف'>
+          <a href="tel:${d.phone}" style="color: blue; text-decoration: none;">
+            📞 اتصال
+          </a><br>${d.phone}
+        </td>
+        <td data-label='الفصيلة'>${d.blood}</td>
+        <td data-label='المحافظة'>${d.city}</td>
+        <td data-label='المديرية'>${d.area}</td>
+        <td data-label='السكن'>${d.location}</td>
+        <td data-label='آخر تبرع'>${d.lastDate}</td>
+      </tr>`;
+      tbody.innerHTML += row;
+    });
+  }
+
+  function showMessage(message) {
+    const popup = document.getElementById("successPopup");
+    popup.innerHTML = message;
+    popup.classList.add("active");
+    setTimeout(() => popup.classList.remove("active"), 4000);
+  }
+
+  function renderSearchTable() {
+    const tbody = document.querySelector("#donorsTable tbody");
+    tbody.innerHTML = "";
+    donorsData.forEach(d => {
+      const row = `<tr>
+        <td data-label='الاسم'>${d.name}</td>
+        <td data-label='الهاتف'>
+          <a href="tel:${d.phone}" style="color: blue; text-decoration: none;">
+            📞 اتصال
+          </a><br>${d.phone}
+        </td>
+        <td data-label='الفصيلة'>${d.blood}</td>
+        <td data-label='المحافظة'>${d.city}</td>
+        <td data-label='المديرية'>${d.area}</td>
+        <td data-label='السكن'>${d.location}</td>
+        <td data-label='آخر تبرع'>${d.lastDate}</td>
+      </tr>`;
+      tbody.innerHTML += row;
+    });
+  }
+</script>
+
+</body>
+</html>

@@ -1,359 +1,2138 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <title>متبرعون بالدم</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>تطبيق قطرة أمل</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="manifest" href="/manifest.json">
   <style>
-    * { box-sizing: border-box; }
-    body {
-      font-family: 'Arial', sans-serif;
-      background-color: #f5f5f5;
-      margin: 0;
-      padding: 0;
-    }
-    header {
-      background-color: #b30000;
+    /* التنسيقات العامة */
+    .btn-update-date {
+      background-color: #2e7d32;
       color: white;
-      text-align: center;
-      padding: 15px;
-      font-size: 24px;
-    }
-    nav {
-      display: flex;
-      justify-content: space-around;
-      background-color: #ffcccc;
-      padding: 10px;
-      flex-wrap: wrap;
-    }
-    nav button {
-      padding: 10px 15px;
       border: none;
-      border-radius: 8px;
-      background-color: #b30000;
-      color: white;
+      padding: 5px 10px;
+      border-radius: 5px;
       cursor: pointer;
-      margin: 5px;
     }
-    .section {
-      display: none;
-      padding: 20px;
+    .btn-update-date:hover {
+      background-color: #1b5e20;
     }
-    .active {
-      display: block;
-    }
-    input, select, button {
-      width: 100%;
-      margin-top: 10px;
-      padding: 10px;
-      border-radius: 10px;
-      border: 1px solid #ccc;
-    }
-    table {
-      width: 100%;
-      margin-top: 15px;
-      border-collapse: collapse;
-      background-color: white;
-    }
-    th, td {
-      padding: 8px;
-      border: 1px solid red;
-      text-align: center;
-    }
-    thead tr {
-      background-color: #b30000;
-      color: white;
-    }
-    .filter-section {
+    * { box-sizing: border-box; }
+    body { font-family: 'Arial', sans-serif; background: #f0f0f0; margin: 0; padding: 0; }
+    header { background-color: #b30000; color: white; text-align: center; padding: 15px; font-size: 20px; display: none; }
+    nav { display: none; flex-wrap: wrap; justify-content: space-around; background-color: #ffcccc; padding: 10px; }
+    nav button { 
+      background-color: #b30000; 
+      color: white; 
+      border: none; 
+      border-radius: 8px; 
+      padding: 10px 20px; 
+      margin: 5px; 
+      cursor: pointer;
       display: flex;
-      flex-direction: column;
-      gap: 10px;
+      align-items: center;
+      gap: 8px;
     }
-    @media (min-width: 600px) {
-      .filter-section {
-        flex-direction: row;
-      }
+    .section { display: none; padding: 20px; }
+    .active { display: block; }
+    input, select, button { width: 100%; padding: 10px; margin-top: 10px; border-radius: 8px; border: 1px solid #ccc; }
+    .field-label { color: #b30000; font-size: 14px; margin-top: 10px; display: flex; align-items: center; gap: 8px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; background: white; }
+    td, th { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding: 10px; text-align: center; }
+    thead { background-color: #b30000; color: white; }
+    tbody tr { border: 2px solid #b30000; margin-bottom: 10px; }
+    .input-icon { position: relative; }
+    .input-icon i { 
+      position: absolute;
+      right: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #b30000;
     }
-    .popup-message, .password-popup {
+    .input-icon input { padding-right: 40px !important; }
+    
+    /* محاذاة أرقام الهاتف والواتساب لليمين */
+    .phone-input, .whatsapp-input {
+      direction: ltr;
+      text-align: right;
+      font-family: monospace;
+    }
+    
+    /* مؤشر التحميل */
+    #loadingIndicator {
       display: none;
       position: fixed;
       top: 50%;
       left: 50%;
-      transform: translate(-50%, -50%) scale(0.9);
-      background-color: #fff;
-      padding: 20px 30px;
-      border-radius: 15px;
-      box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+      transform: translate(-50%, -50%);
       z-index: 1000;
-      transition: all 0.3s ease;
-      max-width: 90%;
-      width: 350px;
+      background: rgba(255,255,255,0.9);
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.2);
       text-align: center;
-      border: 3px solid red;
     }
-    .popup-message.active, .password-popup.active {
-      display: block;
-      transform: translate(-50%, -50%) scale(1);
+    
+    @media (max-width: 600px) {
+      table, thead, tbody, th, td, tr { display: block; }
+      thead { display: none; }
+      tr { margin-bottom: 15px; border: 2px solid #b30000; padding: 10px; border-radius: 10px; background-color: #fff; }
+      td { text-align: right; padding-right: 50%; position: relative; border: none; border-bottom: 1px solid #eee; }
+      td::before { content: attr(data-label); position: absolute; right: 10px; top: 10px; font-weight: bold; color: #b30000; }
+      td:last-child { border-bottom: none; }
     }
-    .popup-message button, .password-popup button {
-      margin-top: 15px;
-      background-color: #c00;
+    .popup-message, .update-date-popup { 
+      display: none; 
+      position: fixed; 
+      top: 50%; 
+      left: 50%; 
+      transform: translate(-50%, -50%); 
+      background: white; 
+      padding: 20px; 
+      border: 2px solid red; 
+      border-radius: 10px; 
+      z-index: 1000; 
+      text-align: center; 
+      max-width: 90%;
+      width: 400px;
+    }
+    .popup-message.active, .update-date-popup.active { display: block; }
+    .popup-icon {
+      font-size: 40px;
+      margin-bottom: 15px;
+    }
+    .success-icon { color: #2e7d32; }
+    .error-icon { color: #b30000; }
+    button i { margin-left: 8px; }
+    #passwordError {
+      color: #b30000;
+      font-size: 14px;
+      margin: 10px 0;
+      display: none;
+      text-align: center;
+      font-weight: bold;
+    }
+
+    /* أنماط قسم الترحيب الجديد */
+    #welcome {
+      text-align: center;
+      padding: 20px;
+      max-width: 100%;
+      margin: 0 auto;
+    }
+    #welcome h1 {
+      color: #b30000;
+      margin-bottom: 30px;
+      font-size: 28px;
+    }
+    #welcome .welcome-content {
+      background: white;
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      margin-bottom: 30px;
+      text-align: right;
+    }
+    #welcome h2 {
+      color: #b30000;
+      font-size: 24px;
+      margin-bottom: 15px;
+    }
+    #welcome h3 {
+      color: #b30000;
+      margin-top: 25px;
+      font-size: 20px;
+    }
+    #welcome p {
+      font-size: 18px;
+      line-height: 1.6;
+      margin-bottom: 15px;
+    }
+    #welcome ul {
+      text-align: right;
+      font-size: 17px;
+      line-height: 1.8;
+      list-style-type: none;
+      padding: 0;
+    }
+    #welcome li {
+      margin-bottom: 10px;
+      padding-right: 10px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    #welcome .quote-box {
+      margin: 30px 0;
+      padding: 15px;
+      background: #ffebee;
+      border-radius: 8px;
+      border-right: 4px solid #b30000;
+      text-align: center;
+    }
+    #welcome .quote-box i {
+      color: #b30000;
+      font-size: 24px;
+      margin-bottom: 10px;
+    }
+    #welcome .quote-box p {
+      font-style: italic;
+      font-size: 16px;
+      margin: 0;
+    }
+    #btn-start-app {
+      background-color: #b30000;
       color: white;
       border: none;
-      padding: 8px 15px;
       border-radius: 8px;
+      padding: 12px 30px;
+      font-size: 18px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      margin: 20px auto;
+      transition: background-color 0.3s;
+    }
+    #btn-start-app:hover {
+      background-color: #8c0000;
+    }
+    .whatsapp-link {
+        display: inline-flex;
+        align-items: center;
+        padding: 10px 15px;
+        background-color: #25D366;
+        color: white;
+        text-decoration: none;
+        border-radius: 8px;
+        font-weight: bold;
+        transition: background-color 0.3s ease;
+    }
+
+    .whatsapp-link:hover {
+        background-color: #1ebe5d;
+    }
+
+    .whatsapp-link i {
+        margin-right: 8px;
+        font-size: 1.2em;
+    }
+    
+    /* أنماط الخريطة */
+    #donorsMap {
+      height: 300px;
+      margin: 20px 0;
+      display: none;
+      border: 2px solid #b30000;
+      border-radius: 8px;
+    }
+    
+    #btn-toggle-map {
+      background-color: #2e7d32;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 8px 15px;
+      margin-bottom: 10px;
       cursor: pointer;
     }
-    .footer {
+    
+    #btn-nearby-donors {
+      background-color: #b30000;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 15px;
+      margin: 10px 0;
+      cursor: pointer;
+      width: 100%;
+    }
+    
+    /* نافذة طلب إذن الموقع */
+    #locationPermission {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.2);
+      z-index: 2000;
       text-align: center;
+      max-width: 90%;
+      width: 350px;
+    }
+    
+    #locationPermission h3 {
+      color: #b30000;
+      margin-top: 0;
+    }
+    
+    .permission-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
       margin-top: 20px;
-      color: #888;
+    }
+    
+    .permission-buttons button {
+      padding: 8px 15px;
+      border-radius: 5px;
+      border: none;
+      cursor: pointer;
+    }
+    
+    #allowLocation {
+      background-color: #2e7d32;
+      color: white;
+    }
+    
+    #denyLocation {
+      background-color: #b30000;
+      color: white;
+    }
+    
+    /* أنماط نافذة الإشعارات */
+    #notificationsPopup {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.2);
+      z-index: 2000;
+      text-align: center;
+      max-width: 90%;
+      width: 350px;
+    }
+    
+    #notificationsPopup h3 {
+      color: #b30000;
+      margin-top: 0;
+    }
+    
+    #notificationsList {
+      max-height: 300px;
+      overflow-y: auto;
+      margin: 15px 0;
+      text-align: right;
+    }
+    
+    .notification-item {
       padding: 10px;
+      border-bottom: 1px solid #eee;
+      text-align: right;
+    }
+    
+    .notification-item:last-child {
+      border-bottom: none;
+    }
+    
+    .notification-time {
+      font-size: 12px;
+      color: #666;
+      margin-top: 5px;
+    }
+    
+    /* أنماط صفحة الترحيب للهواتف */
+    @media (max-width: 600px) {
+      #welcome h1 {
+        font-size: 22px;
+      }
+      
+      #welcome h2 {
+        font-size: 20px;
+      }
+      
+      #welcome h3 {
+        font-size: 18px;
+      }
+      
+      #welcome p {
+        font-size: 16px;
+      }
+      
+      #welcome ul {
+        font-size: 15px;
+      }
+      
+      #welcome li {
+        font-size: 14px;
+      }
+      
+      #btn-start-app {
+        font-size: 16px;
+        padding: 10px 20px;
+      }
+    }
+
+    /* أنماط نافذة الطوارئ */
+    #emergencyPopup {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.2);
+      z-index: 2000;
+      text-align: right;
+      max-width: 90%;
+      width: 350px;
+    }
+    
+    #emergencyPopup h3 {
+      color: #b30000;
+      margin-top: 0;
+      text-align: center;
+    }
+    
+    #emergencyPopup label {
+      display: block;
+      margin: 15px 0 5px;
+      font-weight: bold;
+      color: #b30000;
+    }
+    
+    #emergencyPopup textarea {
+      width: 100%;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      margin-bottom: 10px;
+    }
+    
+    #emergencyPopup .buttons {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 15px;
+    }
+    
+    #emergencyPopup button {
+      padding: 8px 15px;
+      border-radius: 5px;
+      border: none;
+      cursor: pointer;
+    }
+    
+    #btn-send-emergency {
+      background-color: #b30000;
+      color: white;
+    }
+    
+    #btn-cancel-emergency {
+      background-color: #666;
+      color: white;
+    }
+    
+    /* زر الطوارئ في شريط التنقل */
+    #btn-show-emergency {
+      background-color: #d32f2f;
+      color: white;
+    }
+    
+    #btn-show-emergency:hover {
+      background-color: #b71c1c;
+    }
+
+    /* رسائل الخطأ في نافذة الطوارئ */
+    #emergencyErrors {
+      color: #b30000;
+      font-size: 14px;
+      margin: 10px 0;
+      text-align: center;
+      font-weight: bold;
+      display: none;
     }
   </style>
+  <!-- CryptoJS for password hashing -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+  <!-- Google Maps API -->
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDfIBS2gB4lkRZ1_ZerLk451EVfafrfWSM&libraries=places&loading=async"></script>
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/11.6.0/firebase-messaging.js"></script>
 </head>
 <body>
 
-<header>متبرعون بالدم... قطرة أمل تنقذ حياة</header>
-<header>نرجو من المتبرعين تعبئة بياناتهم الصحيحة وكاملة...</header>
+<!-- مؤشر التحميل -->
+<div id="loadingIndicator">
+  <i class="fas fa-spinner fa-spin fa-3x"></i>
+  <p>جاري المعالجة...</p>
+</div>
 
-<nav>
-  <button onclick="showSection('register')">تسجيل متبرع جديد</button>
-  <button onclick="showPasswordPopup()">تعديل بيانات</button>
-  <button onclick="showSection('search')">بحث عن متبرع</button>
-</nav>
+<!-- نافذة طلب إذن الموقع -->
+<div id="locationPermission">
+  <h3><i class="fas fa-map-marker-alt"></i> إذن الوصول إلى الموقع</h3>
+  <p>لتتمكن من رؤية المتبرعين القريبين منك، نحتاج إلى إذنك للوصول إلى الموقع الحالي.</p>
+  <p style="color: #2e7d32; font-weight: bold;">بموافقتك، يمكنك مساعدة المحتاجين للدم بسرعة أكبر!</p>
+  <div class="permission-buttons">
+    <button id="allowLocation"><i class="fas fa-check"></i> الموافقة</button>
+    <button id="denyLocation"><i class="fas fa-times"></i> رفض</button>
+  </div>
+</div>
 
-<div id="register" class="section active">
-  <h3>تسجيل كمتبرع</h3>
-  <input type="text" id="donorName" placeholder="الاسم الكامل">
-  <input type="text" id="donorPhone" placeholder="رقم الهاتف">
-  <input type="text" id="donorCity" placeholder="المحافظة">
-  <input type="text" id="donorArea" placeholder="المديرية">
-  <input type="text" id="donorLocation" placeholder="مكان السكن الحالي">
-  <label for="donorLastDate">آخر تاريخ تبرع (مهم)</label><input type="date" id="donorLastDate">
-  <select id="donorBlood">
-    <option selected>جميع الفصائل</option>
+<!-- نافذة الإشعارات -->
+<div id="notificationsPopup">
+  <div class="popup-icon">
+    <i class="fas fa-bell"></i>
+  </div>
+  <h3>الإشعارات</h3>
+  <div id="notificationsList">
+    <div class="notification-item">
+      <p>مرحباً بك في تطبيق قطرة أمل! شكراً لانضمامك لمجتمع المتبرعين بالدم.</p>
+      <div class="notification-time">اليوم</div>
+    </div>
+  </div>
+  <button id="btn-close-notifications"><i class="fas fa-times"></i> إغلاق</button>
+</div>
+
+<!-- نافذة طلب الطوارئ -->
+<div id="emergencyPopup">
+  <h3><i class="fas fa-exclamation-triangle"></i> طلب تبرع طارئ</h3>
+  
+  <div id="emergencyErrors"></div>
+  
+  <label for="emergencyBloodType"><i class="fas fa-tint"></i> فصيلة الدم المطلوبة</label>
+  <select id="emergencyBloodType">
+    <option value="">اختر فصيلة الدم</option>
     <option>+A</option><option>-A</option>
     <option>+B</option><option>-B</option>
     <option>+AB</option><option>-AB</option>
     <option>+O</option><option>-O</option>
   </select>
-  <button onclick="addDonor()">تسجيل</button>
+  
+  <label for="emergencyCity"><i class="fas fa-city"></i> المحافظة</label>
+  <input type="text" id="emergencyCity" placeholder="المحافظة">
+  
+  <label for="emergencyArea"><i class="fas fa-map-marker-alt"></i> المديرية</label>
+  <input type="text" id="emergencyArea" placeholder="المديرية">
+  
+  <label for="emergencyMessage"><i class="fas fa-comment"></i> رسالة الطلب (اختياري)</label>
+  <textarea id="emergencyMessage" rows="4" placeholder="مثال: حالة طارئة في مستشفى السلام، يرجى التبرع بالدم..."></textarea>
+  
+  <div class="buttons">
+    <button id="btn-cancel-emergency"><i class="fas fa-times"></i> إلغاء</button>
+    <button id="btn-send-emergency"><i class="fas fa-paper-plane"></i> إرسال</button>
+  </div>
 </div>
 
-<div id="edit" class="section">
-  <h3>تعديل بيانات المتبرع</h3>
-  <input type="text" id="editName" placeholder="ابحث باسم المتبرع">
-  <button onclick="editDonor()" style="background-color: #007bff;">بحث عن متبرع</button>
-  <div id="editSection" style="display: none;">
-    <input type="text" id="editNewName" placeholder="الاسم الكامل">
-    <input type="text" id="editPhone" placeholder="رقم الهاتف">
-    <input type="text" id="editCity" placeholder="المحافظة">
-    <input type="text" id="editArea" placeholder="المديرية">
-    <input type="text" id="editLocation" placeholder="مكان السكن ">
-    <input type="date" id="editLastDate">
-    <select id="editBlood">
+<!-- قسم الترحيب الجديد -->
+<div id="welcome" class="section active">
+  <div style="max-width: 800px; margin: 0 auto;">
+    <h1>
+      <i class="fas fa-tint"></i> مرحبًا بكم في تطبيق قطرة أمل
+    </h1>
+    
+    <div class="welcome-content">
+      <h2>هدف التطبيق</h2>
+      <p>
+        تطبيق "قطرة أمل" هو مبادرة إنسانية تهدف إلى تسهيل عملية البحث عن المتبرعين بالدم وتوفير وسيلة اتصال سريعة بين المحتاجين والمتبرعين. 
+        نسعى من خلال هذا التطبيق إلى إنقاذ حياة المرضى والمصابين الذين يحتاجون إلى نقل الدم بشكل عاجل.
+      </p>
+      
+      <h3>مميزات التطبيق</h3>
+      <ul>
+        <li><i class="fas fa-user-plus" style="color: #b30000;"></i> تسجيل متبرعين جدد بسهولة</li>
+        <li><i class="fas fa-search" style="color: #b30000;"></i> البحث عن متبرعين حسب فصيلة الدم والموقع</li>
+        <li><i class="fas fa-map-marker-alt" style="color: #b30000;"></i> تحديد المتبرعين القريبين منك</li>
+        <li><i class="fas fa-phone" style="color: #b30000;"></i> التواصل المباشر مع المتبرعين عبر الهاتف أو الواتساب</li>
+        <li><i class="fas fa-edit" style="color: #b30000;"></i> تحديث بيانات المتبرعين بسهولة</li>
+        <li><i class="fas fa-bell" style="color: #b30000;"></i> إرسال إشعارات طارئة للمتبرعين عند الحاجة للدم</li>
+      </ul>
+      
+      <div class="quote-box">
+        <i class="fas fa-quote-left"></i>
+        <p>قطرة دم واحدة يمكنها إنقاذ حياة... كن بطلاً وساهم في إنقاذ الأرواح</p>
+      </div>
+      
+      <h3>كيف يعمل البحث عن متبرعين قريبين؟</h3>
+      <p>
+        عند الموافقة على مشاركة الموقع، يمكنك البحث عن المتبرعين الأقرب إليك جغرافياً. 
+        هذا يساعد في توفير الوقت والجهد عند الحاجة الضرورية للدم، خاصة في الحالات الطارئة.
+      </p>
+    </div>
+    
+    <button id="btn-start-app">
+      <i class="fas fa-sign-in-alt"></i> الدخول إلى التطبيق
+    </button>
+    
+    <p style="margin-top: 5px; font-size: 14px; color: #666; line-height: 1.4;">
+      <i class="fas fa-info-circle"></i> مصمم الموقع نبيل سالم اليافعي<br>
+      <a class="whatsapp-link" href="https://wa.me/966511479262" target="_blank">
+          <i class="fab fa-whatsapp"></i> 00966511479262 أضغط للتواصل مباشرة
+      </a>
+    </p>
+  </div>
+</div>
+
+<header>
+  <i class="fas fa-tint"></i> تطبيق قطرة أمل ... قطرة أمل تنقذ حياة
+</header>
+<p style="font-size: 17px; color: #333; line-height: 1.3; margin: 5px 0; font-weight: 600; text-align: center; display: none;">
+  <i class="fas fa-info-circle"></i> تم تصميم هذا الموقع لربط المحتاجين بالمتبرعين مباشرة.
+</p>
+
+<nav>
+  <button id="btn-show-register"><i class="fas fa-user-plus"></i> تسجيل متبرع جديد</button>
+  <button id="btn-show-password-popup"><i class="fas fa-edit"></i> تعديل البيانات</button>
+  <button id="btn-show-search"><i class="fas fa-search"></i> بحث عن متبرع</button>
+  <button id="btn-show-emergency"><i class="fas fa-exclamation-triangle"></i> طلب طارئ</button>
+  <button id="btn-show-notifications"><i class="fas fa-bell"></i> الإشعارات</button>
+</nav>
+
+<div id="register" class="section">
+  <h3 style="margin-bottom: 4px;"><i class="fas fa-user-plus"></i> تسجيل متبرع جديد</h3>
+  <p style="font-size: 15px; color: #b71c1c; line-height: 1.2; margin-top: 0; font-weight: 500;">
+    <i class="fas fa-info-circle"></i> الرجاء تعبئة البيانات المطلوبة (مكانك الحالي)  
+  </p>
+  
+  <div class="input-icon">
+    <i class="fas fa-user"></i>
+    <input type="text" id="donorName" placeholder="الاسم">
+  </div>
+  
+  <div class="input-icon">
+    <i class="fas fa-phone"></i>
+    <input type="tel" id="donorPhone" class="phone-input" placeholder="رقم الهاتف" inputmode="numeric" dir="ltr">
+  </div>
+  <label class="field-label">
+    <i class="fab fa-whatsapp"></i> رقم الواتساب ليس إجباري ولاكن في حال سجلت رقم الواتساب يجب أن يبدأ 967 
+  </label>
+  <div class="input-icon">
+    <i class="fab fa-whatsapp"></i>
+    <input type="tel" id="donorWhatsapp" class="whatsapp-input" placeholder="967712345678 (اختياري)" inputmode="numeric" dir="ltr">
+  </div>
+  
+  <div class="input-icon">
+    <i class="fas fa-city"></i>
+    <input type="text" id="donorCity" placeholder="المحافظة">
+  </div>
+  
+  <div class="input-icon">
+    <i class="fas fa-map-marker-alt"></i>
+    <input type="text" id="donorArea" placeholder="المديرية">
+  </div>
+  
+  <div class="input-icon">
+    <i class="fas fa-home"></i>
+    <input type="text" id="donorLocation" placeholder="مكان السكن (اختياري)">
+  </div>
+  
+  <label class="field-label">
+    <i class="fas fa-map-marked-alt"></i> تحديد الموقع بالضغط على استخدام الموقع لتفعيل المتبرعين القريبين.
+  </label>
+  <div id="locationPickerMap" style="height: 200px; margin: 10px 0; border: 2px solid #b30000; border-radius: 8px; display: none;"></div>
+  <button id="btn-get-current-location" type="button" style="background-color: #2e7d32; color: white; border: none; border-radius: 8px; padding: 8px 15px; margin-bottom: 10px; cursor: pointer; width: 100%;">
+    <i class="fas fa-location-arrow"></i> استخدام الموقع لتفعيل المتبرعين القريبين
+  </button>
+  <input type="hidden" id="donorLatitude">
+  <input type="hidden" id="donorLongitude">
+  
+  <label class="field-label">
+    <i class="fas fa-calendar-alt"></i> تاريخ آخر تبرع (إذا لم تتبرع بعد أتركة فارغاً وتستطيع تعديله في جدول البيانات في حال تبرعت)
+  </label>
+  <div class="input-icon">
+    <i class="far fa-calendar"></i>
+    <input type="date" id="donorLastDate">
+  </div>
+  
+   <div class="input-icon">
+    <i class="fas fa-chevron-down"></i>
+    <select id="donorBlood">
+      <option disabled selected value="">اختر فصيلة دمك</option>
       <option>+A</option><option>-A</option>
       <option>+B</option><option>-B</option>
       <option>+AB</option><option>-AB</option>
       <option>+O</option><option>-O</option>
     </select>
-    <button onclick="saveEdit()" style="background-color: #28a745;">تعديل بيانات المتبرع</button>
-    <button onclick="deleteDonor()">حذف</button>
+  </div>
+  
+  <button id="btn-add-donor"><i class="fas fa-save"></i> تسجيل</button>
+</div>
+
+<div id="edit" class="section">
+  <h3><i class="fas fa-edit"></i> تعديل بيانات متبرع</h3>
+  <div class="input-icon">
+    <i class="fas fa-search"></i>
+    <input type="text" id="editSearchInput" placeholder="ابحث باسم المتبرع أو رقمه">
+  </div>
+  <button id="btn-search-donor-edit"><i class="fas fa-search"></i> بحث</button>
+  
+  <div id="editSection" style="display:none;">
+    <p><i class="fas fa-user-edit"></i> جاري تعديل بيانات المتبرع صاحب المعرف: <span id="editingDonorId"></span></p>
+    
+    <div class="input-icon">
+      <i class="fas fa-user"></i>
+      <input type="text" id="editNewName" placeholder="الاسم الكامل">
+    </div>
+    
+    <div class="input-icon">
+      <i class="fas fa-phone"></i>
+      <input type="tel" id="editPhone" class="phone-input" placeholder="رقم الهاتف" dir="ltr">
+    </div>
+    
+    <label class="field-label">
+      <i class="fab fa-whatsapp"></i> رقم الواتساب (اختياري)
+    </label>
+    <div class="input-icon">
+      <i class="fab fa-whatsapp"></i>
+      <input type="tel" id="editWhatsapp" class="whatsapp-input" placeholder="967712345678 (اختياري)" dir="ltr">
+    </div>
+    
+    <div class="input-icon">
+      <i class="fas fa-city"></i>
+      <input type="text" id="editCity" placeholder="المحافظة">
+    </div>
+    
+    <div class="input-icon">
+      <i class="fas fa-map-marker-alt"></i>
+      <input type="text" id="editArea" placeholder="المديرية">
+    </div>
+    
+    <div class="input-icon">
+      <i class="fas fa-home"></i>
+      <input type="text" id="editLocation" placeholder="مكان السكن (اختياري)">
+    </div>
+    
+    <label class="field-label">
+      <i class="fas fa-map-marked-alt"></i> تحديد الموقع على الخريطة
+    </label>
+    <div id="editLocationPickerMap" style="height: 200px; margin: 10px 0; border: 2px solid #b30000; border-radius: 8px;"></div>
+    <button id="btn-get-edit-current-location" type="button" style="background-color: #2e7d32; color: white; border: none; border-radius: 8px; padding: 8px 15px; margin-bottom: 10px; cursor: pointer; width: 100%;">
+      <i class="fas fa-location-arrow"></i> استخدام موقعي الحالي
+    </button>
+    <input type="hidden" id="editDonorLatitude">
+    <input type="hidden" id="editDonorLongitude">
+    
+    <label class="field-label">
+      <i class="fas fa-calendar-alt"></i> تاريخ آخر تبرع
+    </label>
+    <div class="input-icon">
+      <i class="far fa-calendar"></i>
+      <input type="date" id="editLastDate">
+    </div>
+    
+    <label class="field-label">
+      <i class="fas fa-tint"></i> فصيلة الدم
+    </label>
+    <div class="input-icon">
+      <i class="fas fa-chevron-down"></i>
+      <select id="editBlood">
+        <option>+A</option><option>-A</option>
+        <option>+B</option><option>-B</option>
+        <option>+AB</option><option>-AB</option>
+        <option>+O</option><option>-O</option>
+      </select>
+    </div>
+    
+    <button id="btn-save-edit"><i class="fas fa-save"></i> حفظ التعديل</button>
+    <button id="btn-delete-donor"><i class="fas fa-trash-alt"></i> حذف المتبرع</button>
+    <button id="btn-cancel-edit"><i class="fas fa-times"></i> إلغاء</button>
   </div>
 </div>
 
 <div id="search" class="section">
-  <h3>البحث عن متبرعين</h3>
-  <div class="filter-section">
-    <select id="searchBlood" onchange="searchDonors()">
-      <option selected>جميع الفصائل</option>
+  <h3 style="margin-bottom: 4px;"><i class="fas fa-search"></i> البحث عن متبرعين</h3>
+  <p style="font-size: 15px; color: #b71c1c; line-height: 1.2; margin-top: 0; font-weight: 500;">
+    <i class="fas fa-info-circle"></i> للباحثين عن نوع فصيلة دم محددة
+  </p>
+  
+  <label class="field-label">
+    <i class="fas fa-tint"></i> نوع الفصيلة
+  </label>
+  <div class="input-icon">
+    <i class="fas fa-chevron-down"></i>
+    <select id="searchBlood">
+      <option value="">ابحث بنوع الفصيلة</option>
       <option>+A</option><option>-A</option>
       <option>+B</option><option>-B</option>
       <option>+AB</option><option>-AB</option>
       <option>+O</option><option>-O</option>
     </select>
-    <input type="text" id="searchQuery" oninput="searchDonors()" placeholder="ابحث بالاسم أو رقم الهاتف">
   </div>
-  <table id="donorsTable">
+  
+  <div class="input-icon">
+    <i class="fas fa-search"></i>
+    <input type="text" id="searchQuery" placeholder="بحث بالاسم أو الهاتف أو المنطقة">
+  </div>
+  
+  <button id="btn-nearby-donors">
+    <i class="fas fa-location-arrow"></i> البحث عن متبرعين قريبين مني
+  </button>
+  
+  <button id="btn-toggle-map" style="display: none;">
+    <i class="fas fa-map"></i> عرض/إخفاء الخريطة
+  </button>
+  <div id="donorsMap"></div>
+  
+  <div id="donorCount" style="margin:15px 0;font-size:18px;font-weight:bold;color:#333;text-align:center;">
+    <i class="fas fa-users"></i> عدد المتبرعين: 0
+  </div>
+  
+  <table>
     <thead>
       <tr>
-        <th>الاسم</th><th>الهاتف</th><th>الفصيلة</th><th>المحافظة</th><th>المديرية</th><th>السكن</th><th>آخر تبرع</th>
+        <th><i class="fas fa-user"></i> الاسم</th>
+        <th><i class="fas fa-phone"></i> الهاتف</th>
+        <th><i class="fas fa-tint"></i> الفصيلة</th>
+        <th><i class="fas fa-city"></i> المحافظة</th>
+        <th><i class="fas fa-map-marker-alt"></i> المديرية</th>
+        <th><i class="fas fa-home"></i> السكن</th>
+        <th><i class="fab fa-whatsapp"></i> الواتساب</th>
+        <th><i class="fas fa-calendar-alt"></i> آخر تبرع</th>
+        <th><i class="fas fa-location-arrow"></i> المسافة</th>
+        <th><i class="fas fa-edit"></i> تحديث آخر تبرع</th>
       </tr>
     </thead>
-    <tbody></tbody>
+    <tbody id="donorsTable"></tbody>
   </table>
 </div>
 
-<div id="successPopup" class="popup-message"></div>
-<div id="deleteConfirmPopup" class="popup-message">
-  <p>هل أنت متأكد من حذف بيانات المتبرع؟</p>
-  <button onclick="confirmDelete(true)">نعم</button>
-  <button onclick="confirmDelete(false)">لا</button>
+<div id="successPopup" class="popup-message">
+  <div class="popup-icon success-icon">
+    <i class="fas fa-check-circle"></i>
+  </div>
+  <p id="successMessage"></p>
 </div>
-<div id="passwordPopup" class="password-popup">
-  <p>إذا أردت تعديل بياناتك تواصل على الواتس على الرقم التالي:<br>00966511479262</p>
-  <input type="password" id="passwordInput" placeholder="أدخل كلمة المرور">
-  <button onclick="checkPassword()">دخول</button>
-  <button onclick="closePasswordPopup()">إغلاق</button>
-</div>
-<div class="footer">تصميم: م/نبيل اليافعي</div>
 
-<script>
-  const donorsData = [];
-  let pendingDeleteIndex = null;
+<div id="errorPopup" class="popup-message">
+  <div class="popup-icon error-icon">
+    <i class="fas fa-exclamation-circle"></i>
+  </div>
+  <p id="errorMessage"></p>
+</div>
+
+<div id="passwordPopup" class="popup-message">
+  <div class="popup-icon">
+    <i class="fas fa-lock"></i>
+  </div>
+  <h3>التحقق من الهوية</h3>
+  <p>للدخول إلى قسم التعديل، يرجى إدخال كلمة المرور</p>
+  
+  <div class="input-icon">
+    <i class="fas fa-key"></i>
+    <input type="password" id="passwordInput" placeholder="كلمة المرور">
+  </div>
+  
+  <p id="passwordError"></p>
+  
+  <button id="btn-check-password"><i class="fas fa-check"></i> دخول</button>
+  <button id="btn-close-password-popup"><i class="fas fa-times"></i> إغلاق</button>
+  <p style="font-size:12px;color:gray;">
+    <i class="fas fa-info-circle"></i> للتعديل أو الحذف، تواصل على الواتس: 00966511479262 نبيل اليافعي
+  </p>
+</div>
+
+<div id="updateDatePopup" class="update-date-popup">
+  <div class="popup-icon">
+    <i class="fas fa-calendar-check"></i>
+  </div>
+  <h3>تحديث بيانات المتبرع</h3>
+  
+  <div class="input-icon">
+    <i class="fas fa-calendar-day"></i>
+    <input type="date" id="newDonationDate">
+  </div>
+  
+  <button id="btn-save-donation-date"><i class="fas fa-save"></i> حفظ</button>
+  <button id="btn-close-update-date-popup"><i class="fas fa-times"></i> إغلاق</button>
+</div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+  import { getFirestore, collection, addDoc, getDocs, query, where, doc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+  import { GeoPoint } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+  import { getMessaging, getToken, onMessage } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-messaging.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyDfIBS2gB4lkRZ1_ZerLk451EVfafrfWSM",
+    authDomain: "qtratamal.firebaseapp.com",
+    projectId: "qtratamal",
+    storageBucket: "qtratamal.appspot.com",
+    messagingSenderId: "491056452067",
+    appId: "1:491056452067:web:0c8ef019a651cd47c290d6"
+  };
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+  const messaging = getMessaging(app);
+
+  let currentDonorDocId = null;
+  let currentDisplayedDonors = [];
+  let isProcessing = false;
+  const pendingOperations = new Set();
+  let map;
+  let markers = [];
+  let userPosition = null;
+  let locationPermissionAsked = false;
+  let mapInitialized = false;
+  let locationPickerMap;
+  let locationMarker;
+  let editLocationPickerMap;
+  let editLocationMarker;
+
+  // كلمة المرور المشفرة
+  const PASSWORD_HASH = "8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918";
+
+  // وظائف مساعدة
+  function showLoading() {
+    document.getElementById('loadingIndicator').style.display = 'block';
+  }
+
+  function hideLoading() {
+    document.getElementById('loadingIndicator').style.display = 'none';
+  }
+
+  function disableButtons() {
+    document.querySelectorAll('button').forEach(btn => {
+      btn.disabled = true;
+    });
+  }
+
+  function enableButtons() {
+    document.querySelectorAll('button').forEach(btn => {
+      btn.disabled = false;
+    });
+  }
+
+  function showMessage(msg, type = 'success') {
+    const popup = type === 'success' ? document.getElementById('successPopup') : document.getElementById('errorPopup');
+    const messageElement = type === 'success' ? document.getElementById('successMessage') : document.getElementById('errorMessage');
+    
+    messageElement.textContent = msg;
+    popup.classList.add('active'); 
+    setTimeout(() => popup.classList.remove('active'), 3000);
+  }
+
+  function formatDate(dateString) {
+    if (!dateString) return '—';
+    const date = new Date(dateString);
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
+  }
+
+  function normalizeArabic(text) {
+    return text
+      .toLowerCase()
+      .trim()
+      .replace(/[\u064B-\u065F]/g, '')
+      .replace(/[\u0622\u0623\u0625]/g, 'ا')
+      .replace(/ة/g, 'ه')
+      .replace(/ى/g, 'ي')
+      .replace(/\s+/g, ' ');
+  }
+
+  // دالة لتهيئة خريطة تحديد الموقع
+  function initLocationPickerMap() {
+    locationPickerMap = new google.maps.Map(document.getElementById('locationPickerMap'), {
+      center: {lat: 15.3694, lng: 44.1910}, // مركز افتراضي (صنعاء)
+      zoom: 12
+    });
+
+    // إضافة علامة قابلة للسحب
+    locationMarker = new google.maps.Marker({
+      position: {lat: 15.3694, lng: 44.1910},
+      map: locationPickerMap,
+      draggable: true,
+      title: "اسحب العلامة لتحديد موقعك الدقيق"
+    });
+
+    // تحديث الإحداثيات عند تحريك العلامة
+    locationMarker.addListener('dragend', function() {
+      const position = locationMarker.getPosition();
+      document.getElementById('donorLatitude').value = position.lat();
+      document.getElementById('donorLongitude').value = position.lng();
+    });
+
+    // إمكانية النقر على الخريطة لتحديد الموقع
+    locationPickerMap.addListener('click', function(e) {
+      locationMarker.setPosition(e.latLng);
+      document.getElementById('donorLatitude').value = e.latLng.lat();
+      document.getElementById('donorLongitude').value = e.latLng.lng();
+    });
+  }
+
+  // دالة لتهيئة خريطة تحديد الموقع في قسم التعديل
+  function initEditLocationPickerMap(lat, lng) {
+    editLocationPickerMap = new google.maps.Map(document.getElementById('editLocationPickerMap'), {
+      center: {lat: lat || 15.3694, lng: lng || 44.1910},
+      zoom: 12
+    });
+
+    // إضافة علامة قابلة للسحب
+    editLocationMarker = new google.maps.Marker({
+      position: {lat: lat || 15.3694, lng: lng || 44.1910},
+      map: editLocationPickerMap,
+      draggable: true,
+      title: "اسحب العلامة لتحديد موقعك الدقيق"
+    });
+
+    // تحديث الإحداثيات عند تحريك العلامة
+    editLocationMarker.addListener('dragend', function() {
+      const position = editLocationMarker.getPosition();
+      document.getElementById('editDonorLatitude').value = position.lat();
+      document.getElementById('editDonorLongitude').value = position.lng();
+    });
+
+    // إمكانية النقر على الخريطة لتحديد الموقع
+    editLocationPickerMap.addListener('click', function(e) {
+      editLocationMarker.setPosition(e.latLng);
+      document.getElementById('editDonorLatitude').value = e.latLng.lat();
+      document.getElementById('editDonorLongitude').value = e.latLng.lng();
+    });
+  }
+
+  // دالة لتهيئة الخريطة الرئيسية
+  function initMap() {
+    const mapDiv = document.getElementById('donorsMap');
+    if (!mapDiv || mapDiv.style.display === 'none') return;
+    
+    if (!mapInitialized && typeof google !== 'undefined') {
+      map = new google.maps.Map(mapDiv, {
+        center: {lat: 15.3694, lng: 44.1910}, // إحداثيات صنعاء
+        zoom: 12
+      });
+      
+      mapInitialized = true;
+      
+      // طلب إذن الموقع عند تحميل الصفحة
+      if (!locationPermissionAsked) {
+        requestLocationPermission();
+      }
+    }
+  }
+
+  // دالة لطلب إذن الموقع
+  function requestLocationPermission() {
+    locationPermissionAsked = true;
+    const permissionDiv = document.getElementById('locationPermission');
+    
+    // إظهار نافذة طلب الإذن فقط إذا لم يتم منح الإذن مسبقًا
+    if (navigator.permissions) {
+      navigator.permissions.query({name: 'geolocation'}).then(permissionStatus => {
+        if (permissionStatus.state !== 'granted') {
+          permissionDiv.style.display = 'block';
+        }
+      });
+    } else {
+      permissionDiv.style.display = 'block';
+    }
+  }
+
+  // دالة لعرض المتبرعين على الخريطة
+  async function displayDonorsOnMap(donors) {
+    if (!mapInitialized || !map) {
+      initMap();
+      return;
+    }
+    
+    // مسح العلامات القديمة أولاً
+    clearMapMarkers();
+    
+    // إضافة علامة للمستخدم إذا كان لدينا موقعه
+    if (userPosition) {
+      new google.maps.Marker({
+        position: userPosition,
+        map: map,
+        title: 'موقعك الحالي',
+        icon: {
+          url: 'http://maps.google.com/mapfiles/ms/icons/blue-dot.png'
+        }
+      });
+    }
+    
+    const bounds = new google.maps.LatLngBounds();
+    
+    // إضافة علامات للمتبرعين
+    for (const donor of donors) {
+      let donorLocation;
+      
+      if (donor.coordinates) {
+        donorLocation = {
+          lat: donor.coordinates.latitude,
+          lng: donor.coordinates.longitude
+        };
+      } else {
+        // للمتبرعين القدامى الذين لا يوجد لديهم إحداثيات
+        donorLocation = {lat: 15.3694, lng: 44.1910}; // افتراضي لصنعاء
+      }
+      
+      bounds.extend(donorLocation);
+      
+      const marker = new google.maps.Marker({
+        position: donorLocation,
+        map: map,
+        title: donor.name,
+        icon: {
+          url: 'http://maps.google.com/mapfiles/ms/icons/red-dot.png'
+        }
+      });
+      
+      markers.push(marker);
+      
+      // إضافة معلومات عند النقر على العلامة
+      const infoWindow = new google.maps.InfoWindow({
+        content: `
+          <div style="direction: rtl; text-align: right;">
+            <h3 style="margin: 0; color: #b30000;">${donor.name}</h3>
+            <p><strong>فصيلة الدم:</strong> ${donor.blood}</p>
+            <p><strong>الهاتف:</strong> ${donor.phone}</p>
+            ${donor.whatsapp ? `<p><strong>واتساب:</strong> ${donor.whatsapp}</p>` : ''}
+            <p><strong>المحافظة:</strong> ${donor.city}</p>
+            <p><strong>المديرية:</strong> ${donor.area}</p>
+            <a href="tel:${donor.phone}" style="color: white; background: #2e7d32; padding: 5px 10px; border-radius: 5px; text-decoration: none;">
+              <i class="fas fa-phone"></i> اتصل الآن
+            </a>
+          </div>
+        `
+      });
+      
+      marker.addListener('click', () => {
+        infoWindow.open(map, marker);
+      });
+    }
+    
+    if (donors.length > 0) {
+      if (userPosition) {
+        bounds.extend(userPosition);
+      }
+      map.fitBounds(bounds);
+    }
+  }
+
+  // دالة لمسح العلامات من الخريطة
+  function clearMapMarkers() {
+    markers.forEach(marker => marker.setMap(null));
+    markers = [];
+  }
+
+  // دالة للحصول على الموقع الحالي
+  function getCurrentLocation() {
+    return new Promise((resolve, reject) => {
+      if (!navigator.geolocation) {
+        reject('متصفحك لا يدعم تحديد الموقع');
+        return;
+      }
+      
+      navigator.geolocation.getCurrentPosition(
+        position => {
+          userPosition = {
+            lat: position.coords.latitude,
+            lng: position.coords.longitude
+          };
+          resolve(userPosition);
+        },
+        error => {
+          let errorMessage = 'تعذر الحصول على موقعك';
+          switch(error.code) {
+            case error.PERMISSION_DENIED:
+              errorMessage = 'تم رفض طلب الوصول إلى الموقع';
+              break;
+            case error.POSITION_UNAVAILABLE:
+              errorMessage = 'معلومات الموقع غير متوفرة';
+              break;
+            case error.TIMEOUT:
+              errorMessage = 'انتهى وقت طلب الموقع';
+              break;
+          }
+          reject(errorMessage);
+        },
+        { enableHighAccuracy: true, timeout: 10000 }
+      );
+    });
+  }
+
+  async function addDonor() {
+    if (isProcessing) return;
+    
+    const donorName = document.getElementById('donorName').value.trim();
+    const nameParts = donorName.split(/\s+/);
+    const donorPhone = document.getElementById('donorPhone').value.trim();
+    const btn = document.getElementById('btn-add-donor');
+    
+    // التحقق من التكرار المحلي أولاً
+    if (pendingOperations.has(donorPhone)) {
+      showMessage('جاري معالجة هذا المتبرع، يرجى الانتظار...', 'error');
+      return;
+    }
+
+    if (nameParts.length < 2 || nameParts.length > 4) {
+      showMessage("الاسم يجب أن يتكون من أسمين إلى أربعة أسماء فقط.", 'error');
+      return;
+    }
+    
+    const phoneRegex = /^[0-9]{9}$/;
+    if (!phoneRegex.test(donorPhone)) {
+      showMessage('رقم الهاتف يجب أن يتكون من 9 أرقام فقط', 'error');
+      return;
+    }
+    
+    const donorWhatsapp = document.getElementById('donorWhatsapp').value.trim();
+    if (donorWhatsapp) {
+      const whatsappRegex = /^967\d{9}$/;
+      if (!whatsappRegex.test(donorWhatsapp)) {
+        showMessage('رقم الواتساب يجب أن يبدأ بـ 967 ويتكون من 12 رقماً مثال: 967712345678', 'error');
+        return;
+      }
+    }
+
+    // التحقق من وجود إحداثيات
+    const lat = document.getElementById('donorLatitude').value;
+    const lng = document.getElementById('donorLongitude').value;
+    
+    if (!lat || !lng) {
+      showMessage('اضفط على استخدام موقعي الحالي ليسهل البحث عن أقرب متبرع للمحتاج عن الدم', 'error');
+      return;
+    }
+
+    try {
+      isProcessing = true;
+      pendingOperations.add(donorPhone);
+      btn.disabled = true;
+      showLoading();
+      
+      // التحقق من التكرار على السيرفر
+      const phoneSnap = await getDocs(query(collection(db, 'donors'), where('phone', '==', donorPhone)));
+      
+      if (!phoneSnap.empty) {
+        showMessage('رقم الهاتف مسجل بالفعل', 'error');
+        return;
+      }
+      
+      const city = document.getElementById('donorCity').value.trim();
+      const area = document.getElementById('donorArea').value.trim();
+      
+      const d = {
+        name: donorName,
+        phone: donorPhone,
+        city: city,
+        area: area,
+        location: document.getElementById('donorLocation').value.trim(),
+        lastDate: document.getElementById('donorLastDate').value || null,
+        whatsapp: donorWhatsapp || null,
+        blood: document.getElementById('donorBlood').value,
+        coordinates: new GeoPoint(parseFloat(lat), parseFloat(lng)),
+        createdAt: new Date().toISOString()
+      };
+      
+      if (!d.name || !d.phone || !d.city || !d.area || !d.blood) { 
+        showMessage('يرجى تعبئة جميع الحقول الأساسية', 'error'); 
+        return; 
+      }
+
+      const docRef = await addDoc(collection(db, 'donors'), d);
+      
+      // تسجيل رمز الإشعارات إذا كان موجوداً
+      const fcmToken = localStorage.getItem('fcmToken');
+      if (fcmToken) {
+        await updateDoc(doc(db, 'donors', docRef.id), {
+          notificationToken: fcmToken
+        });
+      }
+      
+      showMessage('تم تسجيل بياناتك بنجاح جزاك الله خير');
+      document.querySelectorAll('#register input').forEach(i => i.value = '');
+      document.getElementById('donorBlood').selectedIndex = 0;
+      locationMarker.setPosition({lat: 15.3694, lng: 44.1910}); // إعادة العلامة للموقع الافتراضي
+      document.getElementById('donorLatitude').value = '';
+      document.getElementById('donorLongitude').value = '';
+    } catch (e) {
+      console.error(e);
+      showMessage('حدث خطأ أثناء التسجيل', 'error');
+    } finally {
+      isProcessing = false;
+      pendingOperations.delete(donorPhone);
+      btn.disabled = false;
+      hideLoading();
+    }
+  }
+
+  async function searchDonorToEdit() {
+    if (isProcessing) return;
+    
+    const input = document.getElementById('editSearchInput').value.trim();
+    const btn = document.getElementById('btn-search-donor-edit');
+    
+    if (!input) { 
+      showMessage('الرجاء إدخال الاسم أو رقم الهاتف', 'error'); 
+      return; 
+    }
+    
+    try {
+      isProcessing = true;
+      btn.disabled = true;
+      showLoading();
+      
+      const snap = await getDocs(collection(db, 'donors'));
+      const all = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      const normInput = normalizeArabic(input);
+      const found = all.find(d => {
+        const normName = normalizeArabic(d.name || '');
+        const normPhone = normalizeArabic(d.phone || '');
+        return normName === normInput || normPhone === normInput;
+      });
+      
+      if (found) {
+        currentDonorDocId = found.id;
+        document.getElementById('editingDonorId').textContent = found.id;
+        document.getElementById('editSection').style.display = 'block';
+        document.getElementById('editNewName').value = found.name;
+        document.getElementById('editPhone').value = found.phone;
+        document.getElementById('editWhatsapp').value = found.whatsapp || '';
+        document.getElementById('editCity').value = found.city;
+        document.getElementById('editArea').value = found.area;
+        document.getElementById('editLocation').value = found.location || '';
+        document.getElementById('editLastDate').value = found.lastDate || '';
+        document.getElementById('editBlood').value = found.blood;
+        
+        // تهيئة خريطة التعديل بالإحداثيات الحالية
+        const lat = found.coordinates?.latitude || 15.3694;
+        const lng = found.coordinates?.longitude || 44.1910;
+        initEditLocationPickerMap(lat, lng);
+        document.getElementById('editDonorLatitude').value = lat;
+        document.getElementById('editDonorLongitude').value = lng;
+      } else {
+        showMessage('المتبرع غير موجود', 'error');
+      }
+    } catch (e) { 
+      console.error(e); 
+      showMessage('خطأ أثناء البحث', 'error'); 
+    } finally {
+      isProcessing = false;
+      btn.disabled = false;
+      hideLoading();
+    }
+  }
+
+  async function saveEdit() {
+    if (isProcessing || !currentDonorDocId) return;
+    
+    const btn = document.getElementById('btn-save-edit');
+    const city = document.getElementById('editCity').value.trim();
+    const area = document.getElementById('editArea').value.trim();
+    
+    // التحقق من وجود إحداثيات
+    const lat = document.getElementById('editDonorLatitude').value;
+    const lng = document.getElementById('editDonorLongitude').value;
+    
+    if (!lat || !lng) {
+      showMessage('الرجاء تحديد موقعك على الخريطة', 'error');
+      return;
+    }
+
+    try {
+      isProcessing = true;
+      btn.disabled = true;
+      showLoading();
+      
+      const updated = {
+        name: document.getElementById('editNewName').value.trim(),
+        phone: document.getElementById('editPhone').value.trim(),
+        city: city,
+        area: area,
+        location: document.getElementById('editLocation').value.trim(),
+        lastDate: document.getElementById('editLastDate').value || null,
+        whatsapp: document.getElementById('editWhatsapp').value.trim() || null,
+        blood: document.getElementById('editBlood').value,
+        coordinates: new GeoPoint(parseFloat(lat), parseFloat(lng)),
+        updatedAt: new Date().toISOString()
+      };
+      
+      if (updated.whatsapp) {
+        const whatsappRegex = /^967\d{9}$/;
+        if (!whatsappRegex.test(updated.whatsapp)) {
+          showMessage('رقم الواتساب يجب أن يبدأ بـ 967 ويتكون من 12 رقماً مثال: 967712345678', 'error');
+          return;
+        }
+      }
+      
+      // التحقق من التكرار في الأسماء
+      const nameSnap = await getDocs(query(collection(db, 'donors'), where('name', '==', updated.name)));
+      if (!nameSnap.empty && nameSnap.docs.some(doc => doc.id !== currentDonorDocId)) { 
+        showMessage('هذا الاسم مسجل لمتبرع آخر', 'error'); 
+        return; 
+      }
+      
+      // التحقق من التكرار في أرقام الهاتف
+      const phoneSnap = await getDocs(query(collection(db, 'donors'), where('phone', '==', updated.phone)));
+      if (!phoneSnap.empty && phoneSnap.docs.some(doc => doc.id !== currentDonorDocId)) { 
+        showMessage('رقم الهاتف مسجل لمتبرع آخر', 'error'); 
+        return; 
+      }
+      
+      await updateDoc(doc(db, 'donors', currentDonorDocId), updated);
+      showMessage('تم التعديل بنجاح');
+      document.getElementById('editSection').style.display = 'none'; 
+      currentDonorDocId = null;
+    } catch (e) { 
+      console.error(e); 
+      showMessage('خطأ أثناء الحفظ', 'error'); 
+    } finally {
+      isProcessing = false;
+      btn.disabled = false;
+      hideLoading();
+    }
+  }
+
+  async function deleteDonor() { 
+    if (isProcessing || !currentDonorDocId) return;
+    if (!confirm('هل أنت متأكد من حذف هذا المتبرع؟')) return;
+    
+    const btn = document.getElementById('btn-delete-donor');
+    
+    try {
+      isProcessing = true;
+      btn.disabled = true;
+      showLoading();
+      
+      await deleteDoc(doc(db, 'donors', currentDonorDocId)); 
+      showMessage('تم حذف المتبرع بنجاح');
+      document.getElementById('editSection').style.display = 'none'; 
+      currentDonorDocId = null;
+    } catch (e) {
+      console.error(e);
+      showMessage('حدث خطأ أثناء الحذف', 'error');
+    } finally {
+      isProcessing = false;
+      btn.disabled = false;
+      hideLoading();
+    }
+  }
+
+  function cancelEdit() { 
+    document.getElementById('editSection').style.display = 'none'; 
+    currentDonorDocId = null; 
+  }
+
+  function renderSearchTable(donors) {
+    const tbody = document.getElementById('donorsTable'); 
+    tbody.innerHTML = '';
+    
+    if (!donors.length) { 
+      tbody.innerHTML = '<tr><td colspan="10">لا يوجد متبرعون</td></tr>'; 
+      document.getElementById('donorCount').innerHTML = '<i class="fas fa-users"></i> عدد المتبرعين: 0'; 
+      currentDisplayedDonors = []; 
+      return; 
+    }
+    
+    currentDisplayedDonors = donors; 
+    document.getElementById('donorCount').innerHTML = `<i class="fas fa-users"></i> عدد المتبرعين: ${donors.length}`;
+    
+    donors.forEach(d => {
+      const row = tbody.insertRow();
+      row.innerHTML = `
+        <td data-label="الاسم">${d.name}</td>
+        <td data-label="الهاتف">
+          <div style="display:flex;flex-direction:column;align-items:center;gap:5px;">
+            <a href="tel:${d.phone}" style="color:white;background-color:#1b5e20;padding:5px 10px;border-radius:8px;display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:bold;font-size:12px;white-space:nowrap;">
+              <i class="fas fa-phone"></i>
+              اضغط للإتصال
+            </a>
+           <span style="color:#b30000;font-weight:bold;direction:ltr;text-align:right;font-family:monospace;font-size:18px;">${d.phone}</span>
+          </div>
+        </td> 
+        <td data-label="الفصيلة">${d.blood}</td>
+        <td data-label="المحافظة">${d.city}</td>
+        <td data-label="المديرية">${d.area}</td>
+        <td data-label="السكن">${d.location || '—'}</td>
+        <td data-label="الواتساب">
+          ${d.whatsapp
+            ? `<a href="https://wa.me/${d.whatsapp}" target="_blank"
+                  style="color:green; text-decoration:none; font-weight:bold;
+                         display:flex; flex-direction:column; align-items:center;
+                         font-size: 0.95em;">
+                  <div style="display: flex; align-items: center; gap: 6px;">
+                    <i class="fab fa-whatsapp" style="font-size:1.2em;"></i>
+                    <span>${d.whatsapp}</span>
+                  </div>
+                  <small style="color:#006400; font-weight:normal; margin-top:5px; font-size:13px;">
+                    اضغط للتواصل واتساب مباشرة
+                  </small>
+               </a>`
+            : "—"
+          }
+        </td>
+        <td data-label="آخر تبرع">${d.lastDate ? formatDate(d.lastDate) : '—'}</td>
+        <td data-label="المسافة">${d.distance ? `<i class="fas fa-location-arrow"></i> ${d.distance}` : '—'}</td>
+        <td data-label="تعديل">
+          <button data-donor-id="${d.id}" class="btn-update-date">
+            <i class="fas fa-edit"></i> تحديث تاريخ التبرع
+          </button>
+        </td>
+      `;
+    });
+    
+    document.querySelectorAll('.btn-update-date').forEach(btn => {
+      btn.addEventListener('click', () => enableEditDate(btn.getAttribute('data-donor-id')));
+    });
+    
+    // عرض المتبرعين على الخريطة إذا كانت الخريطة ظاهرة
+    if (document.getElementById('donorsMap').style.display !== 'none') {
+      displayDonorsOnMap(donors);
+    }
+  }
+
+  async function searchDonors() {
+    if (isProcessing) return;
+    
+    const blood = document.getElementById('searchBlood').value;
+    const text = normalizeArabic(document.getElementById('searchQuery').value);
+    
+    try {
+      isProcessing = true;
+      showLoading();
+      
+      let q = collection(db, 'donors');
+      if (blood) q = query(q, where('blood', '==', blood));
+      
+      const snap = await getDocs(q);
+      let donors = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      
+      // تطبيق البحث النصي
+      if (text) {
+        donors = donors.filter(d => {
+          const fields = [d.name, d.phone, d.city, d.area, d.location].map(f => normalizeArabic(f || ''));
+          return fields.some(f => f.includes(text));
+        });
+      }
+      
+      renderSearchTable(donors);
+    } catch (e) {
+      console.error(e);
+      showMessage('حدث خطأ أثناء البحث', 'error');
+    } finally {
+      isProcessing = false;
+      hideLoading();
+    }
+  }
+
+  async function searchNearbyDonors() {
+    try {
+      showLoading();
+      
+      // الحصول على الموقع الحالي
+      const position = await getCurrentLocation();
+      
+      const snap = await getDocs(collection(db, 'donors'));
+      const allDonors = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      
+      // حساب المسافة لكل متبرع
+      const donorsWithDistance = allDonors.map(donor => {
+        let distance = '—';
+        
+        if (donor.coordinates) {
+          const donorPos = {
+            lat: donor.coordinates.latitude,
+            lng: donor.coordinates.longitude
+          };
+          distance = calculateDistance(position, donorPos);
+        }
+        
+        return {
+          ...donor,
+          distance: distance
+        };
+      });
+      
+      // تصفية المتبرعين القريبين (على سبيل المثال ضمن 50 كم)
+      const nearbyDonors = donorsWithDistance.filter(donor => {
+        return donor.distance !== '—' && parseFloat(donor.distance) < 50;
+      });
+      
+      renderSearchTable(nearbyDonors.length > 0 ? nearbyDonors : donorsWithDistance);
+      showMessage(nearbyDonors.length > 0 
+        ? `تم العثور على ${nearbyDonors.length} متبرع قريب منك` 
+        : 'لا يوجد متبرعون قريبون، عرض جميع المتبرعين');
+      
+    } catch (error) {
+      console.error('Error getting nearby donors:', error);
+      showMessage(error, 'error');
+    } finally {
+      hideLoading();
+    }
+  }
+
+  // دالة لحساب المسافة بين موقعين
+  function calculateDistance(pos1, pos2) {
+    const R = 6371; // نصف قطر الأرض بالكيلومتر
+    const dLat = (pos2.lat - pos1.lat) * Math.PI / 180;
+    const dLon = (pos2.lng - pos1.lng) * Math.PI / 180;
+    const a = 
+      Math.sin(dLat/2) * Math.sin(dLat/2) +
+      Math.cos(pos1.lat * Math.PI / 180) * 
+      Math.cos(pos2.lat * Math.PI / 180) * 
+      Math.sin(dLon/2) * Math.sin(dLon/2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    return (R * c).toFixed(1) + ' كم';
+  }
+
+  function enableEditDate(id) { 
+    currentDonorDocId = id; 
+    document.getElementById('updateDatePopup').classList.add('active'); 
+    document.getElementById('newDonationDate').value = ''; 
+  }
+
+  async function saveDonationDate() {
+    if (isProcessing) return;
+    
+    const newDate = document.getElementById('newDonationDate').value;
+    const btn = document.getElementById('btn-save-donation-date');
+    
+    if (!newDate) { 
+      showMessage('يرجى إدخال تاريخ التبرع', 'error'); 
+      return; 
+    }
+    
+    try { 
+      isProcessing = true;
+      btn.disabled = true;
+      showLoading();
+      
+      await updateDoc(doc(db, 'donors', currentDonorDocId), { 
+        lastDate: newDate,
+        updatedAt: new Date().toISOString()
+      }); 
+      
+      showMessage('تم تحديث بيانات المتبرع بنجاح');
+      
+      // تحديث الجدول مباشرة
+      const donorIndex = currentDisplayedDonors.findIndex(d => d.id === currentDonorDocId);
+      if (donorIndex !== -1) {
+        currentDisplayedDonors[donorIndex].lastDate = newDate;
+        renderSearchTable(currentDisplayedDonors);
+      }
+      
+      closeUpdateDatePopup(); 
+      currentDonorDocId = null; 
+    } catch(e) { 
+      console.error('Error updating donor data:', e); 
+      showMessage('حدث خطأ أثناء التحديث', 'error'); 
+    } finally {
+      isProcessing = false;
+      btn.disabled = false;
+      hideLoading();
+    }
+  }
+
+  function closeUpdateDatePopup() { 
+    document.getElementById('updateDatePopup').classList.remove('active'); 
+    currentDonorDocId = null; 
+  }
+
+  function showPasswordPopup() { 
+    document.getElementById('passwordPopup').classList.add('active'); 
+    document.getElementById('passwordInput').value = ''; 
+    document.getElementById('passwordError').style.display = 'none';
+  }
+
+  function closePasswordPopup() { 
+    document.getElementById('passwordPopup').classList.remove('active'); 
+    document.getElementById('passwordError').style.display = 'none';
+  }
+
+  function showEmergencyPopup() {
+    document.getElementById('emergencyPopup').style.display = 'block';
+    document.getElementById('emergencyErrors').style.display = 'none';
+  }
+
+  function closeEmergencyPopup() {
+    document.getElementById('emergencyPopup').style.display = 'none';
+  }
+
+  async function showNotifications() {
+    const notificationsPopup = document.getElementById('notificationsPopup');
+    notificationsPopup.style.display = 'block';
+    
+    try {
+      showLoading();
+      const snap = await getDocs(collection(db, 'emergencyRequests'));
+      const notificationsList = document.getElementById('notificationsList');
+      notificationsList.innerHTML = '';
+      
+      snap.docs.forEach(doc => {
+        const data = doc.data();
+        const notificationItem = document.createElement('div');
+        notificationItem.className = 'notification-item';
+        notificationItem.innerHTML = `
+          <p><strong>طلب طارئ لفصيلة ${data.bloodType}</strong></p>
+          <p>${data.city} - ${data.area}</p>
+          ${data.message ? `<p>${data.message}</p>` : ''}
+          <div class="notification-time">${formatDate(data.timestamp)}</div>
+        `;
+        notificationsList.appendChild(notificationItem);
+      });
+    } catch (error) {
+      console.error('Error fetching notifications:', error);
+    } finally {
+      hideLoading();
+    }
+  }
+
+  function closeNotifications() {
+    const notificationsPopup = document.getElementById('notificationsPopup');
+    notificationsPopup.style.display = 'none';
+  }
+
+  async function checkPassword() { 
+    const inputPassword = document.getElementById('passwordInput').value;
+    const errorElement = document.getElementById('passwordError');
+    
+    if (!inputPassword) {
+      errorElement.textContent = 'يرجى إدخال كلمة المرور';
+      errorElement.style.display = 'block';
+      return;
+    }
+    
+    // حساب التجزئة SHA-256 لكلمة المرور المدخلة
+    const hashedInput = CryptoJS.SHA256(inputPassword).toString();
+    
+    if (hashedInput === PASSWORD_HASH) { 
+      closePasswordPopup(); 
+      showSection('edit'); 
+      errorElement.style.display = 'none';
+    } else {
+      errorElement.textContent = 'كلمة المرور غير صحيحة';
+      errorElement.style.display = 'block';
+    }
+  }
 
   function showSection(id) {
-    document.querySelectorAll(".section").forEach(sec => sec.classList.remove("active"));
-    document.getElementById(id).classList.add("active");
-  }
-
-  function showPasswordPopup() {
-    document.getElementById("passwordPopup").classList.add("active");
-  }
-
-  function closePasswordPopup() {
-    document.getElementById("passwordPopup").classList.remove("active");
-  }
-
-  function checkPassword() {
-    const password = document.getElementById("passwordInput").value;
-    if (password === "Na@7363Nabel") {
-      closePasswordPopup();
-      showSection('edit');
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    
+    // إظهار/إخفاء عناصر التصفح حسب القسم النشط
+    const nav = document.querySelector('nav');
+    const header = document.querySelector('header');
+    const infoP = document.querySelector('header + p');
+    
+    if (id === 'welcome') {
+      nav.style.display = 'none';
+      header.style.display = 'none';
+      infoP.style.display = 'none';
     } else {
-      alert("كلمة المرور غير صحيحة");
+      nav.style.display = 'flex';
+      header.style.display = 'block';
+      infoP.style.display = 'block';
+      
+      if (id === 'search') {
+        searchDonors();
+      }
+      if (id === 'register') {
+        document.querySelectorAll('#register input').forEach(i => i.value = '');
+        document.getElementById('donorBlood').selectedIndex = 0;
+      }
+      if (id === 'edit') {
+        document.getElementById('editSection').style.display = 'none';
+        document.getElementById('editSearchInput').value = '';
+        currentDonorDocId = null;
+        document.getElementById('editingDonorId').textContent = '';
+      }
     }
   }
 
-  function addDonor() {
-    const name = document.getElementById("donorName").value;
-    const phone = document.getElementById("donorPhone").value;
-    const city = document.getElementById("donorCity").value;
-    const area = document.getElementById("donorArea").value;
-    const location = document.getElementById("donorLocation").value;
-    const lastDate = document.getElementById("donorLastDate").value;
-    const blood = document.getElementById("donorBlood").value;
-    if (name && phone && city && area && location && lastDate && blood !== "جميع الفصائل") {
-      donorsData.push({ name, phone, city, area, location, lastDate, blood });
-      showMessage("تم التسجيل بنجاح<br><small>جزاك الله خيرًا وجعلها في ميزان حسناتك</small>");
-      document.querySelectorAll("#register input").forEach(i => i.value = "");
-      document.getElementById("donorBlood").selectedIndex = 0;
-      renderSearchTable();
+  // دالة للتحقق من المتبرع الحالي وتحديث موقعه
+  async function checkAndUpdateCurrentDonor() {
+    try {
+      // الحصول على الموقع الحالي
+      const position = await getCurrentLocation();
+      
+      // البحث عن المتبرع الحالي باستخدام رقم الهاتف
+      const phone = prompt('الرجاء إدخال رقم هاتفك المسجل في التطبيق للتحقق من هويتك:');
+      if (!phone) return;
+      
+      const phoneSnap = await getDocs(query(collection(db, 'donors'), where('phone', '==', phone)));
+      
+      if (phoneSnap.empty) {
+        showMessage('رقم الهاتف غير مسجل في التطبيق', 'error');
+        return;
+      }
+      
+      const donorDoc = phoneSnap.docs[0];
+      const donorData = donorDoc.data();
+      
+      // تحديث موقع المتبرع
+      await updateDoc(doc(db, 'donors', donorDoc.id), {
+        coordinates: new GeoPoint(position.lat, position.lng),
+        updatedAt: new Date().toISOString()
+      });
+      
+      showMessage('تم تحديث موقعك بنجاح. شكراً لك على مساهمتك في إنقاذ الأرواح!');
+      
+    } catch (error) {
+      console.error('Error updating donor location:', error);
+      showMessage('حدث خطأ أثناء تحديث الموقع', 'error');
+    }
+  }
+
+  // دالة لإرسال إشعارات الطوارئ للمتبرعين المناسبين
+  async function sendEmergencyNotification(bloodType, city, area, message) {
+    try {
+      showLoading();
+      
+      // البحث عن المتبرعين المناسبين
+      const q = query(
+        collection(db, 'donors'),
+        where('blood', '==', bloodType),
+        where('city', '==', city),
+        where('area', '==', area)
+      );
+      
+      const donorsSnap = await getDocs(q);
+      
+      if (donorsSnap.empty) {
+        showMessage('لا يوجد متبرعون مسجلون في منطقتك بنفس فصيلة الدم المطلوبة', 'error');
+        return;
+      }
+      
+      // إعداد بيانات الإشعار
+      const notificationTitle = `طلب تبرع طارئ لفصيلة ${bloodType}`;
+      const notificationBody = message || `حالة طارئة في ${city} - ${area}. يرجى التبرع بالدم إذا أمكن.`;
+      
+      // إرسال إشعار لكل متبرع مناسب
+      const promises = [];
+      
+      donorsSnap.forEach(doc => {
+        const donor = doc.data();
+        if (donor.notificationToken) {
+          // هنا يمكنك استخدام خدمة خارجية لإرسال الإشعارات الفورية
+          // مثل Firebase Cloud Functions أو خدمة إرسال إشعارات مخصصة
+          promises.push(
+            fetch('https://fcm.googleapis.com/fcm/send', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'key=AAAAYOUR_SERVER_KEY_HERE'
+              },
+              body: JSON.stringify({
+                to: donor.notificationToken,
+                notification: {
+                  title: notificationTitle,
+                  body: notificationBody,
+                  icon: '/icons/icon-192x192.png',
+                  click_action: window.location.origin
+                },
+                data: {
+                  bloodType,
+                  city,
+                  area,
+                  message,
+                  timestamp: new Date().toISOString()
+                }
+              })
+            })
+          );
+        }
+      });
+      
+      await Promise.all(promises);
+      showMessage(`تم إرسال الإشعارات إلى ${donorsSnap.size} متبرع`);
+      
+    } catch (error) {
+      console.error('Error sending notifications:', error);
+      showMessage('حدث خطأ أثناء إرسال الإشعارات', 'error');
+    } finally {
+      hideLoading();
+    }
+  }
+
+  // دالة لإرسال طلب تبرع طارئ
+  async function sendEmergencyRequest() {
+    const bloodType = document.getElementById('emergencyBloodType').value;
+    const city = document.getElementById('emergencyCity').value.trim();
+    const area = document.getElementById('emergencyArea').value.trim();
+    const message = document.getElementById('emergencyMessage').value.trim();
+    const errorsElement = document.getElementById('emergencyErrors');
+    
+    // إخفاء رسائل الخطأ السابقة
+    errorsElement.style.display = 'none';
+    errorsElement.innerHTML = '';
+    
+    // التحقق من صحة البيانات
+    let isValid = true;
+    let errorMessages = [];
+    
+    if (!bloodType) {
+      isValid = false;
+      errorMessages.push('الرجاء تحديد فصيلة الدم المطلوبة');
+    }
+    
+    if (!city) {
+      isValid = false;
+      errorMessages.push('الرجاء تحديد المحافظة');
+    }
+    
+    if (!area) {
+      isValid = false;
+      errorMessages.push('الرجاء تحديد المديرية');
+    }
+    
+    if (!isValid) {
+      errorsElement.innerHTML = errorMessages.map(msg => `<p>${msg}</p>`).join('');
+      errorsElement.style.display = 'block';
+      return;
+    }
+    
+    try {
+      showLoading();
+      
+      // 1. حفظ الطلب في قاعدة البيانات
+      const emergencyData = {
+        bloodType,
+        city,
+        area,
+        message: message || "حالة طارئة تحتاج إلى تبرع بالدم",
+        timestamp: new Date().toISOString(),
+        status: "pending"
+      };
+      
+      const docRef = await addDoc(collection(db, 'emergencyRequests'), emergencyData);
+      
+      // 2. إرسال إشعارات للمتبرعين المناسبين
+      await sendEmergencyNotification(bloodType, city, area, message);
+      
+      // 3. إضافة الإشعار محلياً
+      const notificationItem = document.createElement('div');
+      notificationItem.className = 'notification-item';
+      notificationItem.innerHTML = `
+        <p><strong>طلب طارئ لفصيلة ${bloodType}</strong></p>
+        <p>${city} - ${area}</p>
+        ${message ? `<p>${message}</p>` : ''}
+        <div class="notification-time">الآن</div>
+      `;
+      document.getElementById('notificationsList').prepend(notificationItem);
+      
+      showMessage(`تم إرسال الطلب بنجاح وسيتم التواصل مع المتبرعين`);
+      closeEmergencyPopup();
+      
+    } catch (error) {
+      console.error('Error sending emergency request:', error);
+      
+      // عرض رسالة الخطأ في الواجهة
+      errorsElement.innerHTML = '<p>حدث خطأ أثناء إرسال الطلب. يرجى المحاولة مرة أخرى لاحقاً.</p>';
+      errorsElement.style.display = 'block';
+      
+    } finally {
+      hideLoading();
+    }
+  }
+
+  // دالة لتهيئة إشعارات Firebase
+  async function initializeFirebaseMessaging() {
+  try {
+    // التحقق من دعم الإشعارات
+    if (!('Notification' in window)) {
+      console.log('This browser does not support notifications');
+      return;
+    }
+
+    // تسجيل خدمة العامل
+    const registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
+    console.log('Service Worker registered:', registration);
+
+    // طلب إذن الإشعارات
+    const permission = await Notification.requestPermission();
+    
+    if (permission === 'granted') {
+      console.log('Notification permission granted.');
+      
+      // الحصول على رمز الجهاز
+      const token = await getToken(messaging, {
+        vapidKey: 'BL_RSy08zoTm4ShAVn5xlGj6Q9jdykvhuMTBICVs010LybRd9CF-vf9uDPkwu_8LN67j3hqt7X7m87iAlbO3Qs0',
+        serviceWorkerRegistration: registration
+      });
+      
+      if (token) {
+        console.log('FCM Token:', token);
+        localStorage.setItem('fcmToken', token);
+        
+        // تحديث رمز الإشعار للمتبرع إذا كان مسجلاً
+        const phone = prompt('إذا كنت متبرعاً مسجلاً، الرجاء إدخال رقم هاتفك لتحديث رمز الإشعار وإذا لم تكن مسجل إضغط إلغاء:');
+        if (phone) {
+          const phoneSnap = await getDocs(query(collection(db, 'donors'), where('phone', '==', phone)));
+          if (!phoneSnap.empty) {
+            const donorDoc = phoneSnap.docs[0];
+            await updateDoc(doc(db, 'donors', donorDoc.id), {
+              notificationToken: token,
+              updatedAt: new Date().toISOString()
+            });
+            showMessage('تم تحديث بيانات الإشعارات بنجاح');
+          }
+        }
+      }
+      
+      // معالجة الإشعارات عندما يكون التطبيق في المقدمة
+      onMessage(messaging, (payload) => {
+        console.log('Message received:', payload);
+        
+        // إضافة الإشعار إلى قائمة الإشعارات المحلية
+        const notificationItem = document.createElement('div');
+        notificationItem.className = 'notification-item';
+        notificationItem.innerHTML = `
+          <p><strong>${payload.notification?.title || 'إشعار جديد'}</strong></p>
+          <p>${payload.notification?.body || 'لديك طلب تبرع طارئ'}</p>
+          <div class="notification-time">الآن</div>
+        `;
+        
+        document.getElementById('notificationsList').prepend(notificationItem);
+        
+        // عرض الإشعار كرسالة منبثقة
+        if (payload.notification) {
+          showMessage(payload.notification.body, 'success');
+          
+          // يمكنك أيضاً عرض إشعار متصفح إذا أردت
+          if ('Notification' in window && Notification.permission === 'granted') {
+            new Notification(payload.notification.title || 'طلب تبرع طارئ', {
+              body: payload.notification.body,
+              icon: '/icons/icon-192x192.png'
+            });
+          }
+        }
+      });
     } else {
-      showMessage("يرجى تعبئة جميع الحقول واختيار الفصيلة");
+      console.log('Unable to get permission to notify.');
     }
+  } catch (error) {
+    console.error('Error initializing Firebase Messaging:', error);
   }
+}
 
-  function editDonor() {
-    const name = document.getElementById("editName").value;
-    const donor = donorsData.find(d => d.name.toLowerCase() === name.toLowerCase());
-    if (donor) {
-      document.getElementById("editSection").style.display = "block";
-      document.getElementById("editNewName").value = donor.name;
-      document.getElementById("editPhone").value = donor.phone;
-      document.getElementById("editCity").value = donor.city;
-      document.getElementById("editArea").value = donor.area;
-      document.getElementById("editLocation").value = donor.location;
-      document.getElementById("editLastDate").value = donor.lastDate;
-      document.getElementById("editBlood").value = donor.blood;
-    } else {
-      showMessage("المتبرع غير موجود");
-      document.getElementById("editSection").style.display = "none";
+  document.addEventListener('DOMContentLoaded', () => {
+    // التحقق من دعم Service Worker
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.ready.then(() => {
+        console.log('Service Worker is ready');
+      });
     }
-  }
-
-  function saveEdit() {
-    const name = document.getElementById("editName").value;
-    const donor = donorsData.find(d => d.name.toLowerCase() === name.toLowerCase());
-    if (donor) {
-      donor.name = document.getElementById("editNewName").value;
-      donor.phone = document.getElementById("editPhone").value;
-      donor.city = document.getElementById("editCity").value;
-      donor.area = document.getElementById("editArea").value;
-      donor.location = document.getElementById("editLocation").value;
-      donor.lastDate = document.getElementById("editLastDate").value;
-      donor.blood = document.getElementById("editBlood").value;
-      renderSearchTable();
-      showMessage("تم تعديل بياناتك بنجاح");
-      document.getElementById("editSection").style.display = "none";
-    }
-  }
-
-  function deleteDonor() {
-    const name = document.getElementById("editName").value;
-    const index = donorsData.findIndex(d => d.name.toLowerCase() === name.toLowerCase());
-    if (index !== -1) {
-      pendingDeleteIndex = index;
-      document.getElementById("deleteConfirmPopup").classList.add('active');
-    }
-  }
-
-  function confirmDelete(confirmed) {
-    if (confirmed && pendingDeleteIndex !== null) {
-      donorsData.splice(pendingDeleteIndex, 1);
-      renderSearchTable();
-      showMessage("تم حذف المتبرع بنجاح");
-      document.getElementById("editSection").style.display = "none";
-    }
-    document.getElementById("deleteConfirmPopup").classList.remove("active");
-    pendingDeleteIndex = null;
-  }
-
-  function searchDonors() {
-    const blood = document.getElementById("searchBlood").value;
-    const query = document.getElementById("searchQuery").value.toLowerCase();
-    const results = donorsData.filter(d => {
-      return (blood === "جميع الفصائل" || blood === d.blood) &&
-             (d.name.toLowerCase().includes(query) || d.phone.includes(query));
+    
+    document.getElementById('btn-show-register').addEventListener('click', () => showSection('register'));
+    document.getElementById('btn-show-password-popup').addEventListener('click', showPasswordPopup);
+    document.getElementById('btn-show-search').addEventListener('click', () => showSection('search'));
+    document.getElementById('btn-show-emergency').addEventListener('click', showEmergencyPopup);
+    document.getElementById('btn-show-notifications').addEventListener('click', showNotifications);
+    document.getElementById('btn-add-donor').addEventListener('click', addDonor);
+    document.getElementById('btn-search-donor-edit').addEventListener('click', searchDonorToEdit);
+    document.getElementById('btn-save-edit').addEventListener('click', saveEdit);
+    document.getElementById('btn-delete-donor').addEventListener('click', deleteDonor);
+    document.getElementById('btn-cancel-edit').addEventListener('click', cancelEdit);
+    document.getElementById('btn-check-password').addEventListener('click', checkPassword);
+    document.getElementById('btn-close-password-popup').addEventListener('click', closePasswordPopup);
+    document.getElementById('btn-close-notifications').addEventListener('click', closeNotifications);
+    document.getElementById('btn-send-emergency').addEventListener('click', sendEmergencyRequest);
+    document.getElementById('btn-cancel-emergency').addEventListener('click', closeEmergencyPopup);
+    document.getElementById('searchBlood').addEventListener('change', searchDonors);
+    document.getElementById('searchQuery').addEventListener('input', searchDonors);
+    document.getElementById('btn-save-donation-date').addEventListener('click', saveDonationDate);
+    document.getElementById('btn-close-update-date-popup').addEventListener('click', closeUpdateDatePopup);
+    document.getElementById('btn-nearby-donors').addEventListener('click', searchNearbyDonors);
+    document.getElementById('btn-toggle-map').addEventListener('click', () => {
+      const mapDiv = document.getElementById('donorsMap');
+      mapDiv.style.display = mapDiv.style.display === 'none' ? 'block' : 'none';
+      
+      if (mapDiv.style.display === 'block') {
+        initMap();
+        if (currentDisplayedDonors.length > 0) {
+          displayDonorsOnMap(currentDisplayedDonors);
+        }
+      }
     });
-    const tbody = document.querySelector("#donorsTable tbody");
-    tbody.innerHTML = "";
-    results.forEach(d => {
-      const row = `<tr>
-        <td data-label='الاسم'>${d.name}</td>
-        <td data-label='الهاتف'>
-          <a href="tel:${d.phone}" style="color: blue; text-decoration: none;">
-            📞 اتصال
-          </a><br>${d.phone}
-        </td>
-        <td data-label='الفصيلة'>${d.blood}</td>
-        <td data-label='المحافظة'>${d.city}</td>
-        <td data-label='المديرية'>${d.area}</td>
-        <td data-label='السكن'>${d.location}</td>
-        <td data-label='آخر تبرع'>${d.lastDate}</td>
-      </tr>`;
-      tbody.innerHTML += row;
+    document.getElementById('btn-start-app').addEventListener('click', () => showSection('register'));
+    
+    // أحداث استخدام الموقع الحالي
+    document.getElementById('btn-get-current-location').addEventListener('click', function() {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(function(position) {
+          const userLocation = {
+            lat: position.coords.latitude,
+            lng: position.coords.longitude
+          };
+          
+          locationMarker.setPosition(userLocation);
+          locationPickerMap.setCenter(userLocation);
+          document.getElementById('donorLatitude').value = userLocation.lat;
+          document.getElementById('donorLongitude').value = userLocation.lng;
+        }, function(error) {
+          showMessage('تعذر الحصول على موقعك الحالي. يرجى تحديد الموقع يدوياً على الخريطة.', 'error');
+        });
+      } else {
+        showMessage('متصفحك لا يدعم تحديد الموقع. يرجى تحديد الموقع يدوياً على الخريطة.', 'error');
+      }
     });
-  }
 
-  function showMessage(message) {
-    const popup = document.getElementById("successPopup");
-    popup.innerHTML = message;
-    popup.classList.add("active");
-    setTimeout(() => popup.classList.remove("active"), 4000);
-  }
-
-  function renderSearchTable() {
-    const tbody = document.querySelector("#donorsTable tbody");
-    tbody.innerHTML = "";
-    donorsData.forEach(d => {
-      const row = `<tr>
-        <td data-label='الاسم'>${d.name}</td>
-        <td data-label='الهاتف'>
-          <a href="tel:${d.phone}" style="color: blue; text-decoration: none;">
-            📞 اتصال
-          </a><br>${d.phone}
-        </td>
-        <td data-label='الفصيلة'>${d.blood}</td>
-        <td data-label='المحافظة'>${d.city}</td>
-        <td data-label='المديرية'>${d.area}</td>
-        <td data-label='السكن'>${d.location}</td>
-        <td data-label='آخر تبرع'>${d.lastDate}</td>
-      </tr>`;
-      tbody.innerHTML += row;
+    document.getElementById('btn-get-edit-current-location').addEventListener('click', function() {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(function(position) {
+          const userLocation = {
+            lat: position.coords.latitude,
+            lng: position.coords.longitude
+          };
+          
+          editLocationMarker.setPosition(userLocation);
+          editLocationPickerMap.setCenter(userLocation);
+          document.getElementById('editDonorLatitude').value = userLocation.lat;
+          document.getElementById('editDonorLongitude').value = userLocation.lng;
+        }, function(error) {
+          showMessage('تعذر الحصول على موقعك الحالي. يرجى تحديد الموقع يدوياً على الخريطة.', 'error');
+        });
+      } else {
+        showMessage('متصفحك لا يدعم تحديد الموقع. يرجى تحديد الموقع يدوياً على الخريطة.', 'error');
+      }
     });
-  }
+    
+    // أحداث نافذة طلب إذن الموقع
+    document.getElementById('allowLocation').addEventListener('click', async () => {
+      document.getElementById('locationPermission').style.display = 'none';
+      
+      try {
+        // الحصول على الموقع الحالي بعد منح الإذن
+        const position = await getCurrentLocation();
+        
+        // عرض رسالة تأكيد للمستخدم
+        const confirmUpdate = confirm('هل ترغب في تحديث موقعك الحالي في قاعدة البيانات إذا كنت متبرعاً مسجلاً؟');
+        
+        if (confirmUpdate) {
+          // استدعاء دالة التحقق والتحديث
+          await checkAndUpdateCurrentDonor();
+        } else {
+          showMessage('تم منح إذن الوصول إلى الموقع. يمكنك الآن استخدام زر "البحث عن متبرعين قريبين"', 'success');
+        }
+      } catch (error) {
+        console.error('Error getting location:', error);
+        showMessage('تم منح إذن الوصول إلى الموقع. يمكنك الآن استخدام زر "البحث عن متبرعين قريبين"', 'success');
+      }
+    });
+    
+    document.getElementById('denyLocation').addEventListener('click', () => {
+      document.getElementById('locationPermission').style.display = 'none';
+      showMessage('لن تتمكن من رؤية المتبرعين القريبين منك بدون إذن الموقع', 'error');
+    });
+    
+    // إظهار قسم الترحيب عند تحميل الصفحة
+    showSection('welcome');
+    
+    // تهيئة إشعارات Firebase
+    initializeFirebaseMessaging();
+    
+    // التحقق من تحميل Google Maps API بشكل دوري
+    let mapCheckInterval = setInterval(() => {
+      if (typeof google !== 'undefined' && typeof google.maps !== 'undefined') {
+        clearInterval(mapCheckInterval);
+        initMap();
+        initLocationPickerMap();
+      }
+    }, 100);
+  });
 </script>
 
 </body>

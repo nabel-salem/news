@@ -1,0 +1,436 @@
+/* التنسيقات العامة */
+    .btn-update-date {
+      background-color: #2e7d32;
+      color: white;
+      border: none;
+      padding: 5px 10px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .btn-update-date:hover {
+      background-color: #1b5e20;
+    }
+    * { box-sizing: border-box; }
+    body { font-family: 'Arial', sans-serif; background: #f0f0f0; margin: 0; padding: 0; }
+    header { background-color: #b30000; color: white; text-align: center; padding: 15px; font-size: 20px; display: none; }
+    nav { display: none; flex-wrap: wrap; justify-content: space-around; background-color: #ffcccc; padding: 10px; }
+    nav button { 
+      background-color: #b30000; 
+      color: white; 
+      border: none; 
+      border-radius: 8px; 
+      padding: 10px 20px; 
+      margin: 5px; 
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .section { display: none; padding: 20px; }
+    .active { display: block; }
+    input, select, button { width: 100%; padding: 10px; margin-top: 10px; border-radius: 8px; border: 1px solid #ccc; }
+    .field-label { color: #b30000; font-size: 14px; margin-top: 10px; display: flex; align-items: center; gap: 8px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; background: white; }
+    td, th { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding: 10px; text-align: center; }
+    thead { background-color: #b30000; color: white; }
+    tbody tr { border: 2px solid #b30000; margin-bottom: 10px; }
+    .input-icon { position: relative; }
+    .input-icon i { 
+      position: absolute;
+      right: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #b30000;
+    }
+    .input-icon input { padding-right: 40px !important; }
+    
+    /* محاذاة أرقام الهاتف والواتساب لليمين */
+    .phone-input, .whatsapp-input {
+      direction: ltr;
+      text-align: right;
+      font-family: monospace;
+    }
+    
+    /* مؤشر التحميل */
+    #loadingIndicator {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 1000;
+      background: rgba(255,255,255,0.9);
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.2);
+      text-align: center;
+    }
+    
+    @media (max-width: 600px) {
+      table, thead, tbody, th, td, tr { display: block; }
+      thead { display: none; }
+      tr { margin-bottom: 15px; border: 2px solid #b30000; padding: 10px; border-radius: 10px; background-color: #fff; }
+      td { text-align: right; padding-right: 50%; position: relative; border: none; border-bottom: 1px solid #eee; }
+      td::before { content: attr(data-label); position: absolute; right: 10px; top: 10px; font-weight: bold; color: #b30000; }
+      td:last-child { border-bottom: none; }
+    }
+    .popup-message, .update-date-popup { 
+      display: none; 
+      position: fixed; 
+      top: 50%; 
+      left: 50%; 
+      transform: translate(-50%, -50%); 
+      background: white; 
+      padding: 20px; 
+      border: 2px solid red; 
+      border-radius: 10px; 
+      z-index: 1000; 
+      text-align: center; 
+      max-width: 90%;
+      width: 400px;
+    }
+    .popup-message.active, .update-date-popup.active { display: block; }
+    .popup-icon {
+      font-size: 40px;
+      margin-bottom: 15px;
+    }
+    .success-icon { color: #2e7d32; }
+    .error-icon { color: #b30000; }
+    button i { margin-left: 8px; }
+    #passwordError {
+      color: #b30000;
+      font-size: 14px;
+      margin: 10px 0;
+      display: none;
+      text-align: center;
+      font-weight: bold;
+    }
+
+    /* أنماط قسم الترحيب الجديد */
+    #welcome {
+      text-align: center;
+      padding: 20px;
+      max-width: 100%;
+      margin: 0 auto;
+    }
+    #welcome h1 {
+      color: #b30000;
+      margin-bottom: 30px;
+      font-size: 28px;
+    }
+    #welcome .welcome-content {
+      background: white;
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      margin-bottom: 30px;
+      text-align: right;
+    }
+    #welcome h2 {
+      color: #b30000;
+      font-size: 24px;
+      margin-bottom: 15px;
+    }
+    #welcome h3 {
+      color: #b30000;
+      margin-top: 25px;
+      font-size: 20px;
+    }
+    #welcome p {
+      font-size: 18px;
+      line-height: 1.6;
+      margin-bottom: 15px;
+    }
+    #welcome ul {
+      text-align: right;
+      font-size: 17px;
+      line-height: 1.8;
+      list-style-type: none;
+      padding: 0;
+    }
+    #welcome li {
+      margin-bottom: 10px;
+      padding-right: 10px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    #welcome .quote-box {
+      margin: 30px 0;
+      padding: 15px;
+      background: #ffebee;
+      border-radius: 8px;
+      border-right: 4px solid #b30000;
+      text-align: center;
+    }
+    #welcome .quote-box i {
+      color: #b30000;
+      font-size: 24px;
+      margin-bottom: 10px;
+    }
+    #welcome .quote-box p {
+      font-style: italic;
+      font-size: 16px;
+      margin: 0;
+    }
+    #btn-start-app {
+      background-color: #b30000;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 12px 30px;
+      font-size: 18px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      margin: 20px auto;
+      transition: background-color 0.3s;
+    }
+    #btn-start-app:hover {
+      background-color: #8c0000;
+    }
+    .whatsapp-link {
+        display: inline-flex;
+        align-items: center;
+        padding: 10px 15px;
+        background-color: #25D366;
+        color: white;
+        text-decoration: none;
+        border-radius: 8px;
+        font-weight: bold;
+        transition: background-color 0.3s ease;
+    }
+
+    .whatsapp-link:hover {
+        background-color: #1ebe5d;
+    }
+
+    .whatsapp-link i {
+        margin-right: 8px;
+        font-size: 1.2em;
+    }
+    
+    /* أنماط الخريطة */
+    #donorsMap {
+      height: 300px;
+      margin: 20px 0;
+      display: none;
+      border: 2px solid #b30000;
+      border-radius: 8px;
+    }
+    
+    #btn-toggle-map {
+      background-color: #2e7d32;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 8px 15px;
+      margin-bottom: 10px;
+      cursor: pointer;
+    }
+    
+    #btn-nearby-donors {
+      background-color: #b30000;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 15px;
+      margin: 10px 0;
+      cursor: pointer;
+      width: 100%;
+    }
+    
+    /* نافذة طلب إذن الموقع */
+    #locationPermission {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.2);
+      z-index: 2000;
+      text-align: center;
+      max-width: 90%;
+      width: 350px;
+    }
+    
+    #locationPermission h3 {
+      color: #b30000;
+      margin-top: 0;
+    }
+    
+    .permission-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 20px;
+    }
+    
+    .permission-buttons button {
+      padding: 8px 15px;
+      border-radius: 5px;
+      border: none;
+      cursor: pointer;
+    }
+    
+    #allowLocation {
+      background-color: #2e7d32;
+      color: white;
+    }
+    
+    #denyLocation {
+      background-color: #b30000;
+      color: white;
+    }
+    
+    /* أنماط نافذة الإشعارات */
+    #notificationsPopup {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.2);
+      z-index: 2000;
+      text-align: center;
+      max-width: 90%;
+      width: 350px;
+    }
+    
+    #notificationsPopup h3 {
+      color: #b30000;
+      margin-top: 0;
+    }
+    
+    #notificationsList {
+      max-height: 300px;
+      overflow-y: auto;
+      margin: 15px 0;
+      text-align: right;
+    }
+    
+    .notification-item {
+      padding: 10px;
+      border-bottom: 1px solid #eee;
+      text-align: right;
+    }
+    
+    .notification-item:last-child {
+      border-bottom: none;
+    }
+    
+    .notification-time {
+      font-size: 12px;
+      color: #666;
+      margin-top: 5px;
+    }
+    
+    /* أنماط صفحة الترحيب للهواتف */
+    @media (max-width: 600px) {
+      #welcome h1 {
+        font-size: 22px;
+      }
+      
+      #welcome h2 {
+        font-size: 20px;
+      }
+      
+      #welcome h3 {
+        font-size: 18px;
+      }
+      
+      #welcome p {
+        font-size: 16px;
+      }
+      
+      #welcome ul {
+        font-size: 15px;
+      }
+      
+      #welcome li {
+        font-size: 14px;
+      }
+      
+      #btn-start-app {
+        font-size: 16px;
+        padding: 10px 20px;
+      }
+    }
+
+    /* أنماط نافذة الطوارئ */
+    #emergencyPopup {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.2);
+      z-index: 2000;
+      text-align: right;
+      max-width: 90%;
+      width: 350px;
+    }
+    
+    #emergencyPopup h3 {
+      color: #b30000;
+      margin-top: 0;
+      text-align: center;
+    }
+    
+    #emergencyPopup label {
+      display: block;
+      margin: 15px 0 5px;
+      font-weight: bold;
+      color: #b30000;
+    }
+    
+    #emergencyPopup textarea {
+      width: 100%;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      margin-bottom: 10px;
+    }
+    
+    #emergencyPopup .buttons {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 15px;
+    }
+    
+    #emergencyPopup button {
+      padding: 8px 15px;
+      border-radius: 5px;
+      border: none;
+      cursor: pointer;
+    }
+    
+    #btn-send-emergency {
+      background-color: #b30000;
+      color: white;
+    }
+    
+    #btn-cancel-emergency {
+      background-color: #666;
+      color: white;
+    }
+    
+    /* زر الطوارئ في شريط التنقل */
+    #btn-show-emergency {
+      background-color: #d32f2f;
+      color: white;
+    }
+    
+    #btn-show-emergency:hover {
+      background-color: #b71c1c;
+    }
